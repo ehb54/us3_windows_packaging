@@ -3,7 +3,7 @@
    <autoclose >0</>
    <compname >LETHBRIDGE</>
    <produrl >http://ultrascan3.aucsolutions.com</>
-   <ver >4.0._version__</>
+   <ver >4.0.__version__</>
    <supurl >http://ultrascan3.aucsolutions.com</>
    <updurl ></>
    <dlgfont >verdana</>
@@ -143,28 +143,28 @@
                         <srclist >
                            <rows rel = unpack >
                               <_ >
-                                 <filename >c:\dist-__version__\LICENSE.txt</>
+                                 <filename >c:__distdir__-__version__\LICENSE.txt</>
                                  <recurse >1</>
                                  <justfile >0</>
                                  <emptydir >0</>
                                  <exclude ></>
                               </>
                               <_ >
-                                 <filename >c:\dist-__version__\bin</>
+                                 <filename >c:__distdir__-__version__\bin</>
                                  <recurse >1</>
                                  <justfile >0</>
                                  <emptydir >0</>
                                  <exclude ></>
                               </>
                               <_ >
-                                 <filename >c:\dist-__version__\etc</>
+                                 <filename >c:__distdir__-__version__\etc</>
                                  <recurse >1</>
                                  <justfile >0</>
                                  <emptydir >0</>
                                  <exclude ></>
                               </>
                               <_ >
-                                 <filename >c:\dist-__version__\somo</>
+                                 <filename >c:__distdir__-__version__\somo</>
                                  <recurse >1</>
                                  <justfile >0</>
                                  <emptydir >0</>

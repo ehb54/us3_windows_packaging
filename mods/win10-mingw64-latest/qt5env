@@ -1,0 +1,19 @@
+export QTDIR=/home/e/src/qt-5.15.7
+export QWTDIR=/home/e/src/qt-5.15.7-qwt-6.1.6
+
+US3DIR=__ultrascandir__
+QTBIN=${QTDIR}/bin
+QTLIB=${QTDIR}/lib
+QTINC=${QTDIR}/include
+US3BIN=${US3DIR}/bin
+US3LIB=${US3DIR}/lib
+QWTLIB=${QWTDIR}/lib
+
+PATH=${US3BIN}:${QTBIN}:$PATH:/bin/site_perl
+ULTRASCAN=${US3DIR}
+us3=${ULTRASCAN}
+MAKEFLAGS="-j 8"
+
+export PATH QTDIR QWTDIR ULTRASCAN us3 MAKEFLAGS
+
+export US3SOMO=/home/e/ultrascan3/us_somo

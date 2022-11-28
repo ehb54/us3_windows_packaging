@@ -73,7 +73,7 @@ for $f ( @all ) {
                 my $d = $j;
                 $d =~ s/^.*\///g;
                 $tochecks{"bin/$d"}++;
-                $copyfrom{"bin/$d"} = $j;
+                $copyfrom{"bin/$d"} = $j if !$copyfrom{"bin/$d"};
             }
         }
     } 

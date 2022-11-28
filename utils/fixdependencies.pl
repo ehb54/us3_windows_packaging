@@ -86,6 +86,19 @@ for $f ( @all ) {
     }
 }
 
+## remove unneeded
+@unneeded = (
+    "bin/*.a"
+    ,"bin/*_linux64*"
+    ,"bin/*_osx*"
+    );
+
+for $p ( @unneeded ) {
+    for my $f ( glob $p ) {
+        $toremoves{$f}++;
+    }
+}
+
 ## extra checks
 
 @extras = (
@@ -123,6 +136,10 @@ print hdrline( "missing" );
 print join "\n", sort { $a cmp $b } keys %missing;
 print "\n" if keys %missing;
 
+print hdrline( "toremoves" );
+print join "\n", sort { $a cmp $b } keys %toremoves;
+print "\n" if keys %toremoves;
+
 ### checks
 print hdrline( "checking existence of libraries" );
 print hdrline( "tochecks" );
@@ -145,6 +162,12 @@ for $d ( sort { $a cmp $b } keys %tochecks ) {
     }
 }
 
+for $d ( sort { $a cmp $b } keys %toremoves ) {
+    $cmds .= "rm $d\n";
+    $err  = "file to be removed: $d";
+    $errorsum .= "$err\n";
+}
+
 if ( $warnings ) {
     print hdrline( "warnings" );
     print $warnings;
@@ -157,10 +180,13 @@ if ( $errorsum ) {
 
 if ( $rev && !keys %todos && !$errorsum && !$cmds ) {
     print hdrline( "build package commands" );
+    my $cmd = "$scriptpath/makepkgdir.pl $rev";
+
 #    my $cmd = "$scriptpath/makepkgdir.pl $installerpath/application
 #(cd $installerpath && yes n | ./build-macos-x64.sh UltraScan3 4.0.$rev && cp target/pkg/UltraScan3-macos-installer-x64-4.0.$rev.pkg ~/Downloads/UltraScan3-macos-installer-`uname -m`-4.0.$rev.pkg)";
-    #    print "$cmd\n";
-    die "not done yet.\n";
+    print "$cmd\n";
+    print "then, run createinstallfree loading /c/dist-$rev/UltraScan3-rev.ci\n";
+    exit;
 }
 
 print hdrline( "cmds" );

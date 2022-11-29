@@ -61,6 +61,15 @@ for $f ( @files ) {
     push @cmds, "sed 's/__ultrascandir__/$dest_sed/g' $base/$f > $dest/$f";
 }
 
+$binbase = "$scriptpath/../bin";
+
+@bins = `cd $binbase && find * -type f | grep -v \\~`;
+grep chomp, @bins;
+for $f ( @bins ) {
+    print "file $f\n";
+    push @cmds, "cp $binbase/$f bin/";
+}
+
 # print join "\n", @cmds;
 # print "\n";
 $debug++;

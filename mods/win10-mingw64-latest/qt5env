@@ -16,4 +16,4 @@ MAKEFLAGS="-j 8"
 
 export PATH QTDIR QWTDIR ULTRASCAN us3 MAKEFLAGS
 
-export US3SOMO=/home/e/ultrascan3/us_somo
+export US3SOMO=$US3DIR/us_somo

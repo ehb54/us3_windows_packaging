@@ -113,5 +113,5 @@ for $cmd ( @cmds ) {
     print run_cmd( $cmd ) . "\n";
 }
 
-print hdrline( "now run createinstall from the gui and load '/c/msys64/$cioutput'" );
+print hdrline( "now run createinstall from the gui and load '/c/msys64$cioutput'" );
 

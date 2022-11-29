@@ -47,6 +47,8 @@ if [ $ISWIN -eq 1 ]; then
   cd $SOMO3/develop
   pwd
   ./version.sh
+  ./revision.sh
+  mkdir ../bin 2> /dev/null
   qmake us_somo.pro
   cp Makefile Makefile-all
   cp Makefile.Release Makefile.R-all

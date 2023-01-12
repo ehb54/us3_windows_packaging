@@ -158,7 +158,7 @@ die "could not create directory $qtshadow\n" if !-d $qtshadow;
 
 ## remove d3d12 because https://aur.archlinux.org/cgit/aur.git/tree/0003-Disable-d3d12-requiring-fxc.exe.patch?h=mingw-w64-qt5-declarative
 
-$cmd = "sed -i 's/qtConfig\(d3d12/# qtConfig\(d3d12/' $qtsrcdir/qtdeclarative/tests/manual/scenegraph_lancelot/scenegraph/scenegraph.pro";
+$cmd = "sed -i 's/^qtConfig\(d3d12/# qtConfig\(d3d12/' $qtsrcdir/qtdeclarative/src/plugins/scenegraph/scenegraph.pro";
 run_cmd( $cmd );
 
 ## configure qt

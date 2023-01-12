@@ -176,6 +176,8 @@ print run_cmd( $cmd );
 
 ### make install
 
+$cmd = "cd $qtshadow && make -j1 -k install > ../install.stdout 2> ../install.stderr";
+print run_cmd( $cmd );
 
 ### make & install qtdatavis3d
 

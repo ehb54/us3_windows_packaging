@@ -171,8 +171,14 @@ print run_cmd( $cmd );
 ## make qt
 # export MSYS2_ARG_CONV_EXCL='*'  only needed to build all or a specific pkg?
 
-$cmd = "cd $qtshadow && make -j$nprocs > ../build.stdout 2> ../build.stderr";
+$cmd = "cd $qtshadow && MSYS2_ARG_CONV_EXCL='*' make -j$nprocs -k > ../build.stdout 2> ../build.stderr";
 print run_cmd( $cmd );
+
+### make install
+
+
+### make & install qtdatavis3d
+
 
 ## download qwt
 $qwtfile = "$src_dir/qwt-$qwt_version.tar.bz2";
@@ -186,6 +192,16 @@ if ( -e $qwtfile ) {
     $cmd = "cd $src_dir && wget --no-check-certificate https://versaweb.dl.sourceforge.net/project/qwt/qwt/$qwt_version/qwt-$qwt_version.tar.bz2";
     print run_cmd( $cmd );
 }
+
+
+## make qwt
+
+## download ultrascan
+
+## configure & build ultrascan?
+
+## setup qt5env
+
 
 
 

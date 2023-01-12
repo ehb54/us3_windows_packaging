@@ -41,5 +41,46 @@ sub line {
     ${char}x80 . "\n";
 }
 
+%opts = ();
+
+sub initopts {
+    %opts = ();
+    for ( my $i = 0; $i < scalar @_; $i += 3 ) {
+        if ( !exists $_[$i+1] || !exists $_[$i+2] ) {
+            error_exit( "initopt requires three arguments for each option" );
+        }
+        $opts{$_[$i]}{desc}  = $_[$i+1];
+        $opts{$_[$i]}{count} = $_[$i+2];
+    }
+}
+
+sub descopts {
+    my $out;
+    for my $k ( sort { $a cmp $b } keys %opts ) {
+        $out .= sprintf( " --%-20s : %s\n", $k, $opts{$k}{desc} );
+    }
+    $out;
+}
+    
+sub procopts {
+    $opts_count = 0;
+    while ( exists $ARGV[0] && $ARGV[0] =~ /^--/ ) {
+        my $opt = shift @ARGV;
+        $opt =~ s/^--//;
+        if ( !exists $opts{$opt} ) {
+            error_exit( "unrecognized command line option --$opt\n---\n$notes" );
+        }
+        if ( $opts{$opt}{count} ) {
+            for ( my $i = 0; $i < $opts{$opt}{count}; ++$i ) {
+                if ( !exists $ARGV[0] ) {
+                    error_exit( "missing argument : --$opt requires $opts{$opt}{count} argument(s)\n---\n$notes" );
+                }
+                $opts{$opt}{args}[$i] = shift @ARGV;
+            }
+        }
+        $opts{$opt}{set} = 1;
+        ++$opts_count;
+    }
+}
 
 1;

@@ -4,7 +4,7 @@ $notes = "usage: $0 (list|update)
 
 finds all libs of everything in bin
 
-update will copy needd libraries if found
+update will copy needed libraries if found
 
 ";
 

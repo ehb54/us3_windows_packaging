@@ -32,7 +32,7 @@ sub run_cmd_last_error {
 
 sub error_exit {
     my $msg = shift;
-    die "$msg\n";
+    die "ERROR: $msg\n";
 }
 
 sub line {

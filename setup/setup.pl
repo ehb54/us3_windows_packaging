@@ -1,5 +1,7 @@
 #!/usr/bin/perl
 
+die "This script must be run under the MINGW64 shell\n" if $ENV{MSYSTEM} ne 'MINGW64';
+
 ## user configuration
 
 $qt_major_version = "5.15";
@@ -21,7 +23,7 @@ $qtshadow     = "$qtsrcdir/shadow-build";
 $qtinstalldir = "$src_dir/qt-$qt_version";
 
 $qwtfile      = "$src_dir/qwt-$qwt_version.tar.bz2";
-$qwtsrcdir    = "$src_dir/qwt-$qwt_version";
+$qwtsrcdir    = "$src_dir/qt-$qt_version-qwt-$qwt_version";
 
 ## end developer config
 
@@ -31,10 +33,11 @@ require "$scriptdir/utility.pm";
 
 initopts(
     "all", "setup everything", 0
-    ,"msys2", "setup msys2 pacman packages", 0
+    ,"mingw64", "setup mingw64 pacman packages", 0
     ,"qt", "download and build qt", 0
     ,"qwt", "download and build qwt", 0
     ,"us", "download and setup ultrascan", 0
+    ,"tpage", "install tpage", 0
     ,"procs", "set number of processors (default $nprocs)", 1
     ,"help", "print help", 0
     );
@@ -46,6 +49,10 @@ installs needed components for building us3
 " . descopts() . "\n";
 
 procopts();
+if ( @ARGV ) {
+    error_exit( "unrecognized command line option(s) : " . join( ' ', @ARGV ) . "\n---\n$notes" );
+}
+
 if ( !$opts_count || $opts{help}{set} ) {
     print $notes;
     exit;
@@ -90,9 +97,9 @@ mkdir $src_dir if !-d $src_dir;
 die "$src_dir does not exist as a directory\n" if !-d $src_dir;
 
 # install initial pkgs first
-if ( $opts{msys2}{set} || $opts{all}{set} ) {
+if ( $opts{mingw64}{set} || $opts{all}{set} ) {
     print line('=');
-    print "processing msys2\n";
+    print "processing mingw64\n";
     print line('=');
     
     for my $p ( @pkgs ) {
@@ -153,7 +160,6 @@ if ( $opts{msys2}{set} || $opts{all}{set} ) {
         while( !$ok );
     }
 }
-
 
 if ( $opts{qt}{set} || $opts{all}{set} ) {
     print line('=');
@@ -242,7 +248,7 @@ if ( $opts{qwt}{set} || $opts{all}{set} ) {
     if ( -d $qwtsrcdir ) {
         warn "NOTICE: $qwtsrcdir exists, not extracting again. Remove if you want a fresh extract\n";
     } else {
-        $cmd = "cd $src_dir && tar jxf $qwtfile";
+        $cmd = "cd $src_dir && mkdir $qwtsrcdir && tar jxf $qwtfile -C $qwtsrcdir --strip-components=1";
         print run_cmd( $cmd );
     }
 

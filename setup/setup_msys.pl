@@ -42,6 +42,7 @@ if ( !$opts_count || $opts{help}{set} ) {
 #    ,"msys2-runtime-devel"
     ,"libcrypt-devel"
     ,"libexpat-devel"
+    ,"make"
     );
 
 # install initial pkgs first
@@ -116,6 +117,6 @@ if ( $opts{tpage}{set} || $opts{all}{set} ) {
 
     ## for dependencies, but doesn't seem to matter
     # my $cmd = "/usr/bin/core_perl/cpan Test YAML XML::Parser Log::Log4perl Template";
-    my $cmd = "/usr/bin/core_perl/cpan Template";
+    my $cmd = "/usr/bin/core_perl/cpan AppConfig Template";
     print run_cmd( $cmd );
 }

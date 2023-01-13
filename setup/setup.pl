@@ -17,7 +17,8 @@ $us_prefix        = "ultrascan3";      ## directory name prefix for ultrascan cl
 ## end user configuration
 
 use File::Basename;
-$scriptdir = dirname(__FILE__);
+use Cwd 'abs_path';
+$scriptdir =  dirname( abs_path( __FILE__ ) );
 
 ## developer config... if these are changed, it may break some assumptions
 

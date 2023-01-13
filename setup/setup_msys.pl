@@ -8,9 +8,10 @@ $debug            = 1; ## primarily prints commands as they are run
 
 ## end user configuration
 
-
 use File::Basename;
-$scriptdir = dirname(__FILE__);
+use Cwd 'abs_path';
+$scriptdir =  dirname( abs_path( __FILE__ ) );
+
 require "$scriptdir/utility.pm";
 
 initopts(

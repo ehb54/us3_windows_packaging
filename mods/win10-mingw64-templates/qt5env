@@ -1,0 +1,19 @@
+export QTDIR=__qtinstalldir__
+export QWTDIR=__qwtsrcdir__
+
+US3DIR=__ultrascandir__
+QTBIN=${QTDIR}/bin
+QTLIB=${QTDIR}/lib
+QTINC=${QTDIR}/include
+US3BIN=${US3DIR}/bin
+US3LIB=${US3DIR}/lib
+QWTLIB=${QWTDIR}/lib
+
+PATH=${US3BIN}:${QTBIN}:$PATH:/bin/site_perl
+ULTRASCAN=${US3DIR}
+us3=${ULTRASCAN}
+MAKEFLAGS="-j__nprocs__"
+
+export PATH QTDIR QWTDIR ULTRASCAN us3 MAKEFLAGS
+
+export US3SOMO=$US3DIR/us_somo

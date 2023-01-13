@@ -10,8 +10,14 @@ $qwt_version      = "6.1.6";
 $src_dir          = "$ENV{HOME}/src";  ## where qt qwt etc will be compiled
 $nprocs           = `nproc` + 1;
 $debug            = 1; ## primarily prints commands as they are run
+$us_git           = "https://github.com/ehb54/ultrascan3";
+$us_base          = $ENV{HOME};        ## base path for ultrascan downloads
+$us_prefix        = "ultrascan3";      ## directory name prefix for ultrascan clones
 
 ## end user configuration
+
+use File::Basename;
+$scriptdir = dirname(__FILE__);
 
 ## developer config... if these are changed, it may break some assumptions
 
@@ -25,21 +31,20 @@ $qtinstalldir = "$src_dir/qt-$qt_version";
 $qwtfile      = "$src_dir/qwt-$qwt_version.tar.bz2";
 $qwtsrcdir    = "$src_dir/qt-$qt_version-qwt-$qwt_version";
 
+$us_mods      = "$scriptdir/../mods/win10-mingw64-templates";
+
 ## end developer config
 
-use File::Basename;
-$scriptdir = dirname(__FILE__);
 require "$scriptdir/utility.pm";
 
 initopts(
-    "all", "setup everything", 0
-    ,"mingw64", "setup mingw64 pacman packages", 0
-    ,"qt", "download and build qt", 0
-    ,"qwt", "download and build qwt", 0
-    ,"us", "download and setup ultrascan", 0
-    ,"tpage", "install tpage", 0
-    ,"procs", "set number of processors (default $nprocs)", 1
-    ,"help", "print help", 0
+    "all",      "",          "setup everything except --us", 0
+    ,"mingw64", "",          "setup mingw64 pacman packages", 0
+    ,"qt",      "",          "download and build qt", 0
+    ,"qwt",     "",          "download and build qwt", 0
+    ,"us",      "branch",    "branch download and setup ultrascan, arguments", 1
+    ,"procs",   "n",         "set number of processors (default $nprocs)", 1
+    ,"help",    "",          "print help", 0
     );
 
 $notes = "usage: $0 options
@@ -258,9 +263,76 @@ if ( $opts{qwt}{set} || $opts{all}{set} ) {
     print run_cmd( $cmd );
 }
 
-## download ultrascan
+if ( $opts{us}{set} ) {
+    print line('=');
+    print "processing us\n";
+    print line('=');
 
-## configure & build ultrascan?
+    error_exit( "$us_mods does not exist" ) if !-d $us_mods;
+    
+    my $branch = $opts{us}{args}[0];
+    my $us_dir = "$us_base/$us_prefix-$branch";
 
-## setup qt5env
+    if ( 0 ) {
+        error_exit( "$us_dir exists, remove or rename" ) if -d $us_dir || -f $us_dir;
+
+
+        print "UltraScan will be cloned in $us_dir\n";
+
+        my $cmd = "git clone -b $branch $us_git $us_dir";
+        print run_cmd( $cmd );
+    }    
+
+    ## copy over $us_mods
+    
+    run_cmd( "mkdir $us_dir/bin" );
+    
+    my $sedline;
+    ## build up sed replacements
+    {
+        my @sedlines;
+        push @sedlines, "s/__nprocs__/$nprocs/g";
+        
+        {
+            my $us_dir_sed = $us_dir;
+            $us_dir_sed =~ s/\//\\\//g;
+            push @sedlines, "s/__ultrascandir__/$us_dir_sed/g";
+        }
+        {
+            my $qtinstalldir_sed = $qtinstalldir;
+            $qtinstalldir_sed =~ s/\//\\\//g;
+            push @sedlines, "s/__qtinstalldir__/$qtinstalldir_sed/g";
+        }
+        {
+            my $qwtsrcdir_sed = $qwtsrcdir;
+            $qwtsrcdir_sed =~ s/\//\\\//g;
+            push @sedlines, "s/__qwtsrcdir__/$qwtsrcdir_sed/g";
+        }
+        $sedline = join ';', @sedlines;
+    }
+        
+    my @files = `cd $us_mods && find * -type f | grep -v \\~`;
+    grep chomp, @files;
+    for my $f ( @files ) {
+        print "file $f\n";
+        push @cmds, "sed '$sedline' $us_mods/$f > $us_dir/$f";
+    }
+
+    my $binbase = "$scriptdir/../bin";
+    error_exit( "$binbase does not exist" ) if !-d $binbase;
+
+    @bins = `cd $binbase && find * -type f | grep -v \\~`;
+    grep chomp, @bins;
+    for $f ( @bins ) {
+        print "file $f\n";
+        push @cmds, "cp $binbase/$f $us_dir/bin/";
+    }
+
+    for my $cmd ( @cmds ) {
+        run_cmd( $cmd );
+    }
+    
+    ## configure & build ultrascan?
+    ## setup qt5env
+}
 

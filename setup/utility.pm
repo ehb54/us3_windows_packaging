@@ -45,19 +45,20 @@ sub line {
 
 sub initopts {
     %opts = ();
-    for ( my $i = 0; $i < scalar @_; $i += 3 ) {
-        if ( !exists $_[$i+1] || !exists $_[$i+2] ) {
-            error_exit( "initopt requires three arguments for each option" );
+    for ( my $i = 0; $i < scalar @_; $i += 4 ) {
+        if ( !exists $_[$i+1] || !exists $_[$i+2] || !exists $_[$i+3] ) {
+            error_exit( "initopt requires four arguments for each option" );
         }
-        $opts{$_[$i]}{desc}  = $_[$i+1];
-        $opts{$_[$i]}{count} = $_[$i+2];
+        $opts{$_[$i]}{argdesc} = $_[$i+1];
+        $opts{$_[$i]}{desc}    = $_[$i+2];
+        $opts{$_[$i]}{count}   = $_[$i+3];
     }
 }
 
 sub descopts {
     my $out;
     for my $k ( sort { $a cmp $b } keys %opts ) {
-        $out .= sprintf( " --%-20s : %s\n", $k, $opts{$k}{desc} );
+        $out .= sprintf( " --%-20s : %s\n", "$k $opts{$k}{argdesc}", $opts{$k}{desc} );
     }
     $out;
 }

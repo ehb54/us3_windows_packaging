@@ -14,10 +14,10 @@ $scriptdir = dirname(__FILE__);
 require "$scriptdir/utility.pm";
 
 initopts(
-    "all", "setup everything", 0
-    ,"msys2", "setup msys2 pacman packages", 0
-    ,"tpage", "install tpage", 0
-    ,"help", "print help", 0
+    "all",    "", "setup everything", 0
+    ,"msys2", "", "setup msys2 pacman packages", 0
+    ,"tpage", "", "install tpage", 0
+    ,"help",  "", "print help", 0
     );
 
 $notes = "usage: $0 options

@@ -46,7 +46,7 @@ initopts(
     ,"qwt",      "",          "download and build qwt", 0
     ,"us",       "branch",    "branch download and setup ultrascan, arguments", 1
     ,"procs",    "n",         "set number of processors (default $nprocs)", 1
-    ,"sshd",     "",          "setup sshd", 0
+    ,"sshd",     "",          "optional - setup sshd to allow ssh'ing into mingw64", 0
     ,"help",     "",          "print help", 0
     );
 

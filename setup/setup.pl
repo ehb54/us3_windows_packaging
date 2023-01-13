@@ -38,13 +38,14 @@ $us_mods      = "$scriptdir/../mods/win10-mingw64-templates";
 require "$scriptdir/utility.pm";
 
 initopts(
-    "all",      "",          "setup everything except --us", 0
-    ,"mingw64", "",          "setup mingw64 pacman packages", 0
-    ,"qt",      "",          "download and build qt", 0
-    ,"qwt",     "",          "download and build qwt", 0
-    ,"us",      "branch",    "branch download and setup ultrascan, arguments", 1
-    ,"procs",   "n",         "set number of processors (default $nprocs)", 1
-    ,"help",    "",          "print help", 0
+    "all",       "",          "setup everything except --us", 0
+    ,"mingw64",  "",          "setup mingw64 pacman packages", 0
+    ,"copylibs", "",          "copy all from /mingw64/lib to /mingw64/x86_64-w64-mingw32/lib", 0
+    ,"qt",       "",          "download and build qt", 0
+    ,"qwt",      "",          "download and build qwt", 0
+    ,"us",       "branch",    "branch download and setup ultrascan, arguments", 1
+    ,"procs",    "n",         "set number of processors (default $nprocs)", 1
+    ,"help",     "",          "print help", 0
     );
 
 $notes = "usage: $0 options
@@ -90,6 +91,7 @@ if ( $opts{procs}{set} ) {
     ,"p7zip"
     ,"perl"
     ,"ruby"
+    ,"rsync"
     ,"python3"
 #    ,"-R mingw-w64-x86_64-gcc"
     ,"https://repo.msys2.org/mingw/mingw64/mingw-w64-x86_64-gcc-libs-10.3.0-8-any.pkg.tar.zst"
@@ -164,6 +166,14 @@ if ( $opts{mingw64}{set} || $opts{all}{set} ) {
         }
         while( !$ok );
     }
+}
+
+if ( $opts{copylibs}{set} || $opts{all}{set} ) {
+    print line('=');
+    print "processing copylibs\n";
+    print line('=');
+    my $cmd = "cd /mingw64/lib && cp -rp * /mingw64/x86_64-w64-mingw32/lib/";
+    run_cmd( $cmd );
 }
 
 if ( $opts{qt}{set} || $opts{all}{set} ) {

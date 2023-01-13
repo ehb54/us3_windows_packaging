@@ -1,5 +1,10 @@
 #!/usr/bin/perl
 
+die qq[environment variable QTDIR must be defined, perhaps by ". qt5env"\n] if !$ENV{QTDIR};
+die qq[environment variable QWTDIR must be defined, perhaps by ". qt5env"\n] if !$ENV{QWTDIR};
+die "$ENV{QTDIR} does not exist as a directory\n" if !-d $ENV{QTDIR};
+die "$ENV{QWTDIR} does not exist as a directory\n" if !-d $ENV{QWTDIR};
+
 $notes = "usage: $0 (list|update)
 
 finds all libs of everything in bin
@@ -99,6 +104,8 @@ for $p ( @unneeded ) {
     }
 }
 
+my $cmds;
+
 ## extra checks
 
 @extras = (
@@ -109,10 +116,16 @@ for $p ( @unneeded ) {
     ,"bin/plugins"
     );
 
+%known_source = (
+    "bin/assistant.exe" => "$ENV{QTDIR}/bin/assistant.exe"
+    ,"bin/plugins"      => "$ENV{QTDIR}/plugins"
+    ,"bin/qwt.dll"      => "$ENV{QWTDIR}/lib/qwt.dll"
+    );
+
 for $f ( @extras ) {
     if ( !-e $f ) {
-        $missing{ $f }++;
-        $errorsum .= "ERROR: $f is missing\n";
+        $tochecks{ $f }++;
+        $copyfrom{ $f } = $known_source{$f} if exists $known_source{$f};
     }
 }
 
@@ -141,21 +154,24 @@ print join "\n", sort { $a cmp $b } keys %toremoves;
 print "\n" if keys %toremoves;
 
 ### checks
-print hdrline( "checking existence of libraries" );
+print hdrline( "checking existence of libraries and other files" );
 print hdrline( "tochecks" );
-
-my $cmds;
 
 for $d ( sort { $a cmp $b } keys %tochecks ) {
     if ( -e $d && !$forcecopy{$d} ) {
         print "ok: $d\n";
     } else {
-        my $err = "ERROR: missing lib: $d - ";
+        my $err = "ERROR: missing: $d - ";
         if ( $copyfrom{ $d } ) {
             $err .= "copy from " .  $copyfrom{ $d };
-            $cmds .= "cp " . $copyfrom{ $d } . " $d\n";
+            $cmds .= "cp -rp " . $copyfrom{ $d } . " $d\n";
         } else {
-            $err .= "unknown source";
+            if ( $known_source{$d} ) {
+                $err .= "copy from " .  $known_source{ $d };
+                $cmds .= "cp -rp " . $known_source{ $d } . " $d\n";
+            } else {
+                $err .= "unknown source";
+            }
         }
         print "$err\n";
         $errorsum .= "$err\n";

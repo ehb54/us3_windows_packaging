@@ -247,7 +247,8 @@ if ( $opts{qt}{set} || $opts{all}{set} ) {
     # export MSYS2_ARG_CONV_EXCL='*'  only needed to build all or a specific pkg?
 
     $cmd = "cd $qtshadow && MSYS2_ARG_CONV_EXCL='*' make -j$nprocs -k > ../build.stdout 2> ../build.stderr";
-    print run_cmd( $cmd );
+    print run_cmd( $cmd, true, 3 );
+    error_exit( sprintf( "ERROR: failed [%d] $cmd", run_cmd_last_error() ) ) if run_cmd_last_error();
 
     ### make install
 

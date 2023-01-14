@@ -237,6 +237,10 @@ if ( $opts{qt}{set} || $opts{all}{set} ) {
     $cmd = "sed -i 's/^qtConfig\(d3d12/# qtConfig\(d3d12/' $qtsrcdir/qtdeclarative/src/plugins/scenegraph/scenegraph.pro";
     run_cmd( $cmd );
 
+    ## remove wmf / compile error issue 
+    $cmd = "sed -i 's/^\\s*qtConfig(wmf/# qtConfig(wmf/' $qtsrcdir/qtmultimedia/src/plugins/plugins.pro";
+    run_cmd( $cmd );
+
     ## configure qt
 
     $cmd = "cd $qtshadow && MAKEFLAGS=-j$nprocs ../configure -prefix $qtinstalldir -release -opensource -confirm-license -nomake tests -nomake examples -system-proxies -D QT_SHAREDMEMORY -D QT_SYSTEMSEMAPHORE -no-icu -platform win32-g++ -plugin-sql-mysql MYSQL_INCDIR=/mingw64/include/mariadb MYSQL_LIBDIR=/mingw64/lib -openssl-linked -opengl desktop -plugin-sql-psql PSQL_LIBDIR=/mingw64/lib PSQL_INCDIR=/mingw64/include/postgresql > ../last_configure.stdout 2> ../last_configure.stderr";

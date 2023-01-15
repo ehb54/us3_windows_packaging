@@ -1,6 +1,9 @@
 # us3_windows_packaging
 repo for info &amp; supplementary data to build us3 windows binary packages
 
+- If you have any questions or problems, please create an issue.
+- Pull requests happily considered.
+
 ## setting up a first time build environment
 - [install createinstall](https://www.createinstall.com/download-free-trial.html)
   - get the `freeware version`

@@ -311,15 +311,12 @@ if ( $opts{us}{set} ) {
     my $branch = $opts{us}{args}[0];
     my $us_dir = "$us_base/$us_prefix-$branch";
 
-    if ( 0 ) {
-        error_exit( "$us_dir exists, remove or rename" ) if -d $us_dir || -f $us_dir;
+    error_exit( "$us_dir exists, remove or rename" ) if -d $us_dir || -f $us_dir;
 
+    print "UltraScan will be cloned in $us_dir\n";
 
-        print "UltraScan will be cloned in $us_dir\n";
-
-        my $cmd = "git clone -b $branch $us_git $us_dir";
-        print run_cmd( $cmd );
-    }    
+    my $cmd = "git clone -b $branch $us_git $us_dir";
+    print run_cmd( $cmd );
 
     ## copy over $us_mods
     

@@ -26,6 +26,7 @@ repo for info &amp; supplementary data to build us3 windows binary packages
     - `~/us3_windows_packaging/setup/setup.pl --us branch`
       - where `branch` is an ultrascan3 repo branch
     - `cd ultrascan-branch`
+    - `. qt5env`
     - `./makeall.sh`
     - `./makesomo.sh`
     - `~/us3_windows_packaging/utils/fixdependencies.pl update`
@@ -39,6 +40,7 @@ repo for info &amp; supplementary data to build us3 windows binary packages
   - `git stash`
   - `git pull`
   - `git stash pop`
+  - `. qt5env`
   - `./makeall.sh`
   - `./makesomo.sh`
   - `~/us3_windows_packaging/utils/fixdependencies.pl update`
@@ -47,6 +49,7 @@ repo for info &amp; supplementary data to build us3 windows binary packages
 - new branch
   - `~/us3_windows_packaging/setup/setup.pl --us branch`
   - `cd ultrascan-branch`
+  - `. qt5env`
   - `./makeall.sh`
   - `./makesomo.sh`
   - `~/us3_windows_packaging/utils/fixdependencies.pl update`

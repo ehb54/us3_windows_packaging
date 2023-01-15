@@ -195,13 +195,13 @@ if ( $errorsum ) {
 }
 
 if ( $rev && !keys %todos && !$errorsum && !$cmds ) {
+    my $branch = `git branch --show-current`;
+    chomp $branch;
+    $branch = "" if $branch =~ /^(master|main)$/;
+    $branch = "-$branch" if $branch;
+    my $cmd = "$scriptpath/makepkgdir.pl $rev$branch";
     print hdrline( "build package commands" );
-    my $cmd = "$scriptpath/makepkgdir.pl $rev";
-
-#    my $cmd = "$scriptpath/makepkgdir.pl $installerpath/application
-#(cd $installerpath && yes n | ./build-macos-x64.sh UltraScan3 4.0.$rev && cp target/pkg/UltraScan3-macos-installer-x64-4.0.$rev.pkg ~/Downloads/UltraScan3-macos-installer-`uname -m`-4.0.$rev.pkg)";
     print "$cmd\n";
-    print "then, run createinstallfree loading /c/dist-$rev/UltraScan3-rev.ci\n";
     exit;
 }
 
@@ -213,3 +213,4 @@ if ( $cmds && $update ) {
     print "WARNING: rerun until no cmds nor ERRORs left\n";
 }
 
+die "not ready for packaging\n" if $cmds || keys %todos || $errorsum;

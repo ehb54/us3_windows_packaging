@@ -113,5 +113,5 @@ for $cmd ( @cmds ) {
     print run_cmd( $cmd ) . "\n";
 }
 
-print hdrline( "now run createinstall from the gui and Project->Open '/c/msys64$cioutput', the click 'Run'" );
+print hdrline( "now run createinstall from the gui and Project->Open '/c/msys64$cioutput', then click 'Run'" );
 

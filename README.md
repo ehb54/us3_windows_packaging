@@ -6,7 +6,7 @@ repo for info &amp; supplementary data to build us3 windows binary packages
 
 ## setting up a first time build environment
 - [install createinstall](https://www.createinstall.com/download-free-trial.html)
-  - get the `freeware version`
+  - get the `freeware version` - `cif-setup.exe`
 - [install most recent msys2 64 bit package](https://repo.msys2.org/distrib/x86_64/)
   - at the time of this writing, it was `msys2-x86_64-20221216.exe`
   - accept all defaults when installing

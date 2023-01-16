@@ -66,6 +66,8 @@ repo for info &amp; supplementary data to build us3 windows binary packages
 
 ## notes
  - `createinstallfree` will put built packages in `/c/setups` (equivalently `c:/setups`)
+ - depending on the speed of your machine, number of processers it can take quite a while for the setups to finish
+   - took about 6 hours on my (old) i7 with 4 cores given to the Window VM and a SATA SSD. 
  - qt versions can be changed [here](setup/setup.pl)
  - some ultrascan3 scripts are modified from the ultrascan3 repo branch, see [here](mods/win10-mingw64-templates)
    - this should eventually be migrated into the repos themselves

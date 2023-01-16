@@ -16,7 +16,7 @@ repo for info &amp; supplementary data to build us3 windows binary packages
     - `msys2 msys`
     - `msys2 mingw64`
     - & others
-  - under `msys2 msys` shell run:
+  - under `msys2 msys` desktop app:
     - `pacman -Syuu`
       - repeat until there is nothing further updated
         - the window will likely close after the first update and you will have to restart the `msys2 msys` desktop app 

@@ -63,3 +63,11 @@ repo for info &amp; supplementary data to build us3 windows binary packages
   - `~/us3_windows_packaging/utils/fixdependencies.pl update`
     - this will have to be repeated until it gives packaging instructions
     - follow the packaging instructions
+
+## notes
+ - `createinstallfree` will put built packages in `/c/setups` (equivalently `c:/setups`)
+ - qt versions can be changed [here](setup/setup.pl)
+ - some ultrascan3 scripts are modified from the ultrascan3 repo branch, see [here](mods/win10-mingw64-templates)
+   - this should eventually be migrated into the repos themselves
+     - leaving it this way for now to allow correct building of prior releases
+   - this is why the `git stash && git pull && git stash pop` when `building ultrascan again`

@@ -20,6 +20,7 @@ repo for info &amp; supplementary data to build us3 windows binary packages
     - `pacman -Syuu`
       - repeat until there is nothing further updated
         - the window will likely close after the first update and you will have to restart the `msys2 msys` desktop app 
+      - N.B. do not run this command again one the steps below have been run. This is due to qt5 requiring an older version of gcc. If you wish to update the msys2 system, you must completely uninstall msys2 and make sure no msys2 created directories remain.
     - `pacman -S git`
     - `git clone https://github.com/ehb54/us3_windows_packaging`
     - `us3_windows_packaging/setup/setup_msys.pl --all`

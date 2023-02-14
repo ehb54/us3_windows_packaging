@@ -24,6 +24,7 @@ repo for info &amp; supplementary data to build us3 windows binary packages
     - `pacman -S git`
     - `git clone https://github.com/ehb54/us3_windows_packaging`
     - `us3_windows_packaging/setup/setup_msys.pl --all`
+      - you may need to press Enter/Return at the `/usr/bin/core_perl/cpan AppConfig Template` step to keep the setup progressing. 
     - exit the `msys2 msys` desktop app
   - under the `msys2 mingw64` desktop app
     - `~/us3_windows_packaging/setup/setup.pl --all`

@@ -111,6 +111,7 @@ my $cmds;
 @extras = (
     "bin/rasmol.exe"
     ,"bin/rasmol.hlp"
+    ,"bin/tar.exe"
     ,"bin/manual.qch"
     ,"bin/assistant.exe"
     ,"bin/plugins"

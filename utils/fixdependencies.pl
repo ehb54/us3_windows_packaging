@@ -1,5 +1,8 @@
 #!/usr/bin/perl
 
+use warnings;
+$debug = 0;
+
 die qq[environment variable QTDIR must be defined, perhaps by ". qt5env"\n] if !$ENV{QTDIR};
 die qq[environment variable QWTDIR must be defined, perhaps by ". qt5env"\n] if !$ENV{QWTDIR};
 die "$ENV{QTDIR} does not exist as a directory\n" if !-d $ENV{QTDIR};
@@ -39,7 +42,7 @@ $scriptpath = dirname(__FILE__);
 
 ## prune apps
 
-@apps = grep !/(win64|linux64|osx1|manual\.q|\.a$|rasmol)/, @apps;
+@apps = grep !/(win64|linux64|osx1|manual\.q|\.a$|rasmol|plugins)/, @apps;
 
 ## get libs
 
@@ -50,12 +53,17 @@ grep chomp, @libs;
 
 push @all, @apps;
 
-#print "all:\n";
-#print join '', @all;
-#print "libs:\n";
-#print join "\n", @libs;
-#print "\n";
-
+if ( $debug ) {
+    print "all:\n";
+    print join '', @all;
+    print "\n";
+    print "apps:\n";
+    print join '', @apps;
+    print "\n";
+    print "libs:\n";
+    print join "\n", @libs;
+    print "\n";
+}
 grep chomp, @all;
 
 ## check if lib is present in bin

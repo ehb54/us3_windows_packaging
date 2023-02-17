@@ -43,7 +43,7 @@ $scriptpath = dirname(__FILE__);
 
 ## prune apps
 
-@apps = grep !/(win64|linux64|osx1|manual\.q|\.a$|rasmol|plugins)/, @apps;
+@apps = grep !/(win64|linux64|osx1|manual\.q|\.a$|rasmol)/, @apps;
 
 ## get libs
 

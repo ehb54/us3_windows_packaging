@@ -94,7 +94,7 @@ for $f ( @all ) {
                 `ldd $f > $tempfile`;
                 die "fatal: ldd $f error\n" if $?;
             }
-            warn "ldd $f success\n";
+            warn "success: ldd $f\n";
         }
         
         my @extra = `grep -vi WINDOWS $tempfile | grep -v 'not found' | awk '{ print \$3 }' | sort -u`;
@@ -117,7 +117,7 @@ for $f ( @all ) {
                 `ldd $f > $tempfile`;
                 die "fatal: ldd $f error\n" if $?;
             }
-            warn "ldd $f success\n";
+            warn "success: ldd $f\n";
         }
         my @extra = `grep -vi WINDOWS $tempfile | grep 'not found' | awk '{ print \$1 }' | sort -u`;
         die "fatal: ldd error\n" if $?;

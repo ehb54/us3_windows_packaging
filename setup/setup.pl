@@ -98,6 +98,7 @@ if ( $opts{procs}{set} ) {
 #    ,"-R mingw-w64-x86_64-gcc"
     ,"https://repo.msys2.org/mingw/mingw64/mingw-w64-x86_64-gcc-libs-10.3.0-8-any.pkg.tar.zst"
     ,"https://repo.msys2.org/mingw/mingw64/mingw-w64-x86_64-gcc-10.3.0-8-any.pkg.tar.zst"
+    ,"mingw-w64-x86_64-ntldd-git"
     );
 
 ## setup $src_dir

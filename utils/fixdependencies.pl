@@ -1,8 +1,9 @@
 #!/usr/bin/perl
 
 use warnings;
-$debug   = 0;
-$logfile = "fixdeps.log";
+$debug    = 0;
+$logfile  = "fixdeps.log";
+$tempfile = "tempfile.txt";
 
 die qq[environment variable QTDIR must be defined, perhaps by ". qt5env"\n] if !$ENV{QTDIR};
 die qq[environment variable QWTDIR must be defined, perhaps by ". qt5env"\n] if !$ENV{QWTDIR};
@@ -82,8 +83,11 @@ for $f ( @libs ) {
 
 for $f ( @all ) {
     print $debuglog "checking $f\n" if $debug;
+    print "checking $f\n";
     {
-        my @extra = `ldd $f | grep -vi WINDOWS | grep -v 'not found' | awk '{ print \$3 }' | sort -u`;
+        `ldd $f > $tempfile`;
+        die "fatal: ldd $f error\n" if $?;
+        my @extra = `grep -vi WINDOWS $tempfile | grep -v 'not found' | awk '{ print \$3 }' | sort -u`;
         grep chomp, @extra;
         foreach my $j ( @extra ) {
             my $d = $j;
@@ -94,7 +98,10 @@ for $f ( @all ) {
         }
     } 
     {
-        my @extra = `ldd $f | grep -vi WINDOWS | grep 'not found' | awk '{ print \$1 }' | sort -u`;
+        `ldd $f > $tempfile`;
+        die "fatal: ldd $f error\n" if $?;
+        my @extra = `grep -vi WINDOWS $tempfile | grep 'not found' | awk '{ print \$1 }' | sort -u`;
+        die "fatal: ldd error\n" if $?;
         grep chomp, @extra;
         foreach my $j ( @extra ) {
             print $debuglog "checking $f : not found lib $j\n" if $debug;

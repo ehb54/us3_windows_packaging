@@ -1,7 +1,8 @@
 #!/usr/bin/perl
 
 use warnings;
-$debug = 0;
+$debug   = 0;
+$logfile = "fixdeps.log";
 
 die qq[environment variable QTDIR must be defined, perhaps by ". qt5env"\n] if !$ENV{QTDIR};
 die qq[environment variable QWTDIR must be defined, perhaps by ". qt5env"\n] if !$ENV{QWTDIR};
@@ -54,15 +55,17 @@ grep chomp, @libs;
 push @all, @apps;
 
 if ( $debug ) {
-    print "all:\n";
-    print join '', @all;
-    print "\n";
-    print "apps:\n";
-    print join '', @apps;
-    print "\n";
-    print "libs:\n";
-    print join "\n", @libs;
-    print "\n";
+    open  $debuglog, ">>$logfile";
+    print $debuglog `date`;
+    print $debuglog "all:\n";
+    print $debuglog join '', @all;
+    print $debuglog "\n";
+    print $debuglog "apps:\n";
+    print $debuglog join '', @apps;
+    print $debuglog "\n";
+    print $debuglog "libs:\n";
+    print $debuglog join "\n", @libs;
+    print $debuglog "\n";
 }
 grep chomp, @all;
 
@@ -78,12 +81,14 @@ for $f ( @libs ) {
 }
 
 for $f ( @all ) {
+    print $debuglog "checking $f\n" if $debug;
     {
         my @extra = `ldd $f | grep -vi WINDOWS | grep -v 'not found' | awk '{ print \$3 }' | sort -u`;
         grep chomp, @extra;
         foreach my $j ( @extra ) {
             my $d = $j;
             $d =~ s/^.*\///g;
+            print $debuglog "checking $f : found lib bin/$d from $j\n" if $debug;
             $tochecks{"bin/$d"}++;
             $copyfrom{"bin/$d"} = $j if !$copyfrom{"bin/$d"};
         }
@@ -92,6 +97,7 @@ for $f ( @all ) {
         my @extra = `ldd $f | grep -vi WINDOWS | grep 'not found' | awk '{ print \$1 }' | sort -u`;
         grep chomp, @extra;
         foreach my $j ( @extra ) {
+            print $debuglog "checking $f : not found lib $j\n" if $debug;
             $tochecks{"bin/$j"}++;
         }
     }
@@ -194,11 +200,15 @@ for $d ( sort { $a cmp $b } keys %toremoves ) {
 if ( $warnings ) {
     print hdrline( "warnings" );
     print $warnings;
+    print $debuglog hdrline( "warnings" ) if $debug;
+    print $debuglog $warnings if $debug;
 }
 
 if ( $errorsum ) {
     print hdrline( "error summary" );
     print $errorsum;
+    print $debuglog hdrline( "error summary" ) if $debug;
+    print $debuglog $errorsum if $debug;
 }
 
 if ( $rev && !keys %todos && !$errorsum && !$cmds ) {
@@ -209,6 +219,8 @@ if ( $rev && !keys %todos && !$errorsum && !$cmds ) {
     my $cmd = "$scriptpath/makepkgdir.pl $rev$branch";
     print hdrline( "build package commands" );
     print "$cmd\n";
+    print $debuglog hdrline( "build package commands" ) if $debug;
+    print $debuglog "$cmd\n" if $debug;
     exit;
 }
 

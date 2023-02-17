@@ -86,7 +86,17 @@ for $f ( @all ) {
     print "checking $f\n";
     {
         `ldd $f > $tempfile`;
-        die "fatal: ldd $f error\n" if $?;
+        if ( $? ) {
+            warn "warning: ldd $f error, retrying 1 of 2\n" if $?;
+            `ldd $f > $tempfile`;
+            if ( $? ) {
+                warn "warning: ldd $f error, retrying 2 of 2\n" if $?;
+                `ldd $f > $tempfile`;
+                die "fatal: ldd $f error\n" if $?;
+            }
+            warn "ldd $f success\n";
+        }
+        
         my @extra = `grep -vi WINDOWS $tempfile | grep -v 'not found' | awk '{ print \$3 }' | sort -u`;
         grep chomp, @extra;
         foreach my $j ( @extra ) {
@@ -99,7 +109,16 @@ for $f ( @all ) {
     } 
     {
         `ldd $f > $tempfile`;
-        die "fatal: ldd $f error\n" if $?;
+        if ( $? ) {
+            warn "warning: ldd $f error, retrying 1 of 2\n" if $?;
+            `ldd $f > $tempfile`;
+            if ( $? ) {
+                warn "warning: ldd $f error, retrying 2 of 2\n" if $?;
+                `ldd $f > $tempfile`;
+                die "fatal: ldd $f error\n" if $?;
+            }
+            warn "ldd $f success\n";
+        }
         my @extra = `grep -vi WINDOWS $tempfile | grep 'not found' | awk '{ print \$1 }' | sort -u`;
         die "fatal: ldd error\n" if $?;
         grep chomp, @extra;

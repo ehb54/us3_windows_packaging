@@ -74,12 +74,10 @@ for $f ( @all ) {
         my @extra = `ldd $f | grep -vi WINDOWS | grep -v 'not found' | awk '{ print \$3 }' | sort -u`;
         grep chomp, @extra;
         foreach my $j ( @extra ) {
-            if ( $d ne 'not' ) {
-                my $d = $j;
-                $d =~ s/^.*\///g;
-                $tochecks{"bin/$d"}++;
-                $copyfrom{"bin/$d"} = $j if !$copyfrom{"bin/$d"};
-            }
+            my $d = $j;
+            $d =~ s/^.*\///g;
+            $tochecks{"bin/$d"}++;
+            $copyfrom{"bin/$d"} = $j if !$copyfrom{"bin/$d"};
         }
     } 
     {

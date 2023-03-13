@@ -46,6 +46,7 @@ repo for info &amp; supplementary data to build us3 windows binary packages
 ## after install - building ultrascan again
 - always under the `msys2 mingw64` desktop app
 - existing branch
+  - 2023 March - apparently some issue with this, remove the ultrascan-branch directory & follow the new branch instructions. 
   - `cd ultrascan-branch`
   - `git stash`
   - `git pull`

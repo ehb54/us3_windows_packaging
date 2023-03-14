@@ -358,7 +358,7 @@ if ( $opts{us}{set} ) {
     my $binbase = "$scriptdir/../bin";
     error_exit( "$binbase does not exist" ) if !-d $binbase;
 
-    @bins = `cd $binbase && find * -type f | grep -v \\~`;
+    my @bins = `cd $binbase && find * -type f | grep -v \\~`;
     grep chomp, @bins;
     for $f ( @bins ) {
         print "file $f\n";
@@ -423,7 +423,7 @@ if ( $opts{us_update}{set} ) {
     my $binbase = "$scriptdir/../bin";
     error_exit( "$binbase does not exist" ) if !-d $binbase;
 
-    @bins = `cd $binbase && find * -type f | grep -v \\~`;
+    my @bins = `cd $binbase && find * -type f | grep -v \\~`;
     grep chomp, @bins;
     for $f ( @bins ) {
         print "file $f\n";
@@ -434,6 +434,15 @@ if ( $opts{us_update}{set} ) {
         run_cmd( $cmd );
     }
     
+    # clean up any somo Makefiles
+
+    my @makefiles = `find $us_dir/us_somo -name "Makefile*"`;
+    grep chomp, @makefiles;
+    if ( @makefiles ) {
+        my $cmd = "rm " . ( join ' ', @makefiles );
+        run_cmd( $cmd );
+    }
+
     ## configure & build ultrascan?
     ## setup qt5env
 }

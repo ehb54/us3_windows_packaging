@@ -97,7 +97,7 @@ for $f ( @all ) {
             warn "success: ldd $f\n";
         }
         
-        my @extra = `grep -vi WINDOWS $tempfile | grep -v 'not found' | awk '{ print \$3 }' | sort -u`;
+        my @extra = `grep -Pv '^\\s*\\?\\?\\?' $tempfile | grep -vi WINDOWS | grep -v 'not found' | awk '{ print \$3 }' | sort -u`;
         grep chomp, @extra;
         foreach my $j ( @extra ) {
             my $d = $j;
@@ -119,7 +119,7 @@ for $f ( @all ) {
             }
             warn "success: ldd $f\n";
         }
-        my @extra = `grep -vi WINDOWS $tempfile | grep 'not found' | awk '{ print \$1 }' | sort -u`;
+        my @extra = `grep -Pv '^\\s*\\?\\?\\?' $tempfile | grep -vi WINDOWS | grep 'not found' | awk '{ print \$1 }' | sort -u`;
         die "fatal: ldd error\n" if $?;
         grep chomp, @extra;
         foreach my $j ( @extra ) {

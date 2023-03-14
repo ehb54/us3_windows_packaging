@@ -33,7 +33,7 @@ repo for info &amp; supplementary data to build us3 windows binary packages
         - `--nprocs` is used for configuring & building qt, qwt and ultrascan
     - `~/us3_windows_packaging/setup/setup.pl --us branch`
       - where `branch` is an ultrascan3 repo branch
-    - `cd ultrascan-branch`
+    - `cd ~/ultrascan-branch`
     - `. qt5env`
     - `./makeall.sh`
     - `./makesomo.sh`
@@ -46,8 +46,11 @@ repo for info &amp; supplementary data to build us3 windows binary packages
 ## after install - building ultrascan again
 - always under the `msys2 mingw64` desktop app
 - note that `branch` below is replaced by name of the branch used.
+- all cases, make sure to have the latest packaging code
+  - `cd ~/us3_windows_packaging`
+  - `git pull` 
 - existing branch
-  - `cd ultrascan-branch`
+  - `cd ~/ultrascan-branch`
   - `git fetch origin`
   - `git reset --hard origin/branch`
   - `git pull`
@@ -60,7 +63,7 @@ repo for info &amp; supplementary data to build us3 windows binary packages
     - follow the packaging instructions
 - new branch
   - `~/us3_windows_packaging/setup/setup.pl --us branch`
-  - `cd ultrascan-branch`
+  - `cd ~/ultrascan-branch`
   - `. qt5env`
   - `./makeall.sh`
   - `./makesomo.sh`
@@ -76,4 +79,4 @@ repo for info &amp; supplementary data to build us3 windows binary packages
  - some ultrascan3 scripts are modified from the ultrascan3 repo branch, see [here](mods/win10-mingw64-templates)
    - this should eventually be migrated into the repos themselves
      - leaving it this way for now to allow correct building of prior releases
-   - this is why the `git stash && git pull && git stash pop` when `building ultrascan again`
+   - this is why the `git fetch orign && git reset --hard origin/branch && git pull && ~/us3_windows_packaging --us_update branch` when `building ultrascan again`

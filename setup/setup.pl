@@ -39,15 +39,16 @@ $us_mods      = "$scriptdir/../mods/win10-mingw64-templates";
 require "$scriptdir/utility.pm";
 
 initopts(
-    "all",       "",          "setup everything except --sshd & --us", 0
-    ,"mingw64",  "",          "setup mingw64 pacman packages", 0
-    ,"copylibs", "",          "copy all from /mingw64/lib to /mingw64/x86_64-w64-mingw32/lib", 0
-    ,"qt",       "",          "download and build qt", 0
-    ,"qwt",      "",          "download and build qwt", 0
-    ,"us",       "branch",    "branch download and setup ultrascan, arguments", 1
-    ,"procs",    "n",         "set number of processors (default $nprocs)", 1
-    ,"sshd",     "",          "optional - setup sshd to allow ssh'ing into mingw64", 0
-    ,"help",     "",          "print help", 0
+    "all",        "",          "setup everything except --sshd, --us & --us_update", 0
+    ,"mingw64",   "",          "setup mingw64 pacman packages", 0
+    ,"copylibs",  "",          "copy all from /mingw64/lib to /mingw64/x86_64-w64-mingw32/lib", 0
+    ,"qt",        "",          "download and build qt", 0
+    ,"qwt",       "",          "download and build qwt", 0
+    ,"us",        "branch",    "branch download and setup ultrascan", 1
+    ,"us_update", "branch",    "update existing branch,", 1
+    ,"procs",     "n",         "set number of processors (default $nprocs)", 1
+    ,"sshd",      "",          "optional - setup sshd to allow ssh'ing into mingw64", 0
+    ,"help",      "",          "print help", 0
     );
 
 $notes = "usage: $0 options
@@ -322,6 +323,71 @@ if ( $opts{us}{set} ) {
     ## copy over $us_mods
     
     run_cmd( "mkdir $us_dir/bin" );
+    
+    my $sedline;
+    ## build up sed replacements
+    {
+        my @sedlines;
+        push @sedlines, "s/__nprocs__/$nprocs/g";
+        
+        {
+            my $us_dir_sed = $us_dir;
+            $us_dir_sed =~ s/\//\\\//g;
+            push @sedlines, "s/__ultrascandir__/$us_dir_sed/g";
+        }
+        {
+            my $qtinstalldir_sed = $qtinstalldir;
+            $qtinstalldir_sed =~ s/\//\\\//g;
+            push @sedlines, "s/__qtinstalldir__/$qtinstalldir_sed/g";
+        }
+        {
+            my $qwtsrcdir_sed = $qwtsrcdir;
+            $qwtsrcdir_sed =~ s/\//\\\//g;
+            push @sedlines, "s/__qwtsrcdir__/$qwtsrcdir_sed/g";
+        }
+        $sedline = join ';', @sedlines;
+    }
+        
+    my @files = `cd $us_mods && find * -type f | grep -v \\~`;
+    grep chomp, @files;
+    for my $f ( @files ) {
+        print "file $f\n";
+        push @cmds, "sed '$sedline' $us_mods/$f > $us_dir/$f";
+    }
+
+    my $binbase = "$scriptdir/../bin";
+    error_exit( "$binbase does not exist" ) if !-d $binbase;
+
+    @bins = `cd $binbase && find * -type f | grep -v \\~`;
+    grep chomp, @bins;
+    for $f ( @bins ) {
+        print "file $f\n";
+        push @cmds, "cp $binbase/$f $us_dir/bin/";
+    }
+
+    for my $cmd ( @cmds ) {
+        run_cmd( $cmd );
+    }
+    
+    ## configure & build ultrascan?
+    ## setup qt5env
+}
+
+if ( $opts{us_update}{set} ) {
+    print line('=');
+    print "processing us\n";
+    print line('=');
+
+    error_exit( "$us_mods does not exist" ) if !-d $us_mods;
+    
+    my $branch = $opts{us_update}{args}[0];
+    my $us_dir = "$us_base/$us_prefix-$branch";
+
+    error_exit( "$us_dir does is not directory" ) if !-d $us_dir;
+
+    ## copy over $us_mods
+    
+    error_exit( "$us_dir/bin is not a directory. You should probably remove $us_dir and start over as a new branch" ) if !-d "$us_dir/bin";
     
     my $sedline;
     ## build up sed replacements

@@ -45,12 +45,13 @@ repo for info &amp; supplementary data to build us3 windows binary packages
  
 ## after install - building ultrascan again
 - always under the `msys2 mingw64` desktop app
+- note that `branch` below is replaced by name of the branch used.
 - existing branch
-  - 2023 March - apparently some issue with this, remove the ultrascan-branch directory & follow the new branch instructions. 
   - `cd ultrascan-branch`
-  - `git stash`
+  - `git fetch origin`
+  - `git reset --hard origin/branch`
   - `git pull`
-  - `git stash pop`
+  - `~/us3_windows_packaging/setup/setup.pl --us_update branch`
   - `. qt5env`
   - `./makeall.sh`
   - `./makesomo.sh`

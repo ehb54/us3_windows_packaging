@@ -42,6 +42,7 @@ initopts(
     "all",        "",          "setup everything except --sshd, --us & --us_update", 0
     ,"mingw64",   "",          "setup mingw64 pacman packages", 0
     ,"copylibs",  "",          "copy all from /mingw64/lib to /mingw64/x86_64-w64-mingw32/lib", 0
+    ,"git",       "repo",      "use specified repo instead of default $us_git", 1
     ,"qt",        "",          "download and build qt", 0
     ,"qwt",       "",          "download and build qwt", 0
     ,"us",        "branch",    "branch download and setup ultrascan", 1
@@ -301,6 +302,11 @@ if ( $opts{qwt}{set} || $opts{all}{set} ) {
 
     my $cmd = "cd $qwtsrcdir && $qtinstalldir/bin/qmake && make -j$nprocs > build.stdout 2> build.stderr";
     print run_cmd( $cmd );
+}
+
+if ( $opts{git}{set} ) {
+    $us_git = $opts{git}{args}[0];
+    print "git repo now $us_git\n";
 }
 
 if ( $opts{us}{set} ) {

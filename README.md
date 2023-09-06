@@ -46,6 +46,7 @@ repo for info &amp; supplementary data to build us3 windows binary packages
 ## after install - building ultrascan again
 - always under the `msys2 mingw64` desktop app
 - note that `branch` below is replaced by name of the branch used.
+- option `--git repo` can be supplied to `setup.pl` to build from a fork
 - all cases, make sure to have the latest packaging code
   - `cd ~/us3_windows_packaging`
   - `git pull` 

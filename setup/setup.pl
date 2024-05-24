@@ -98,8 +98,8 @@ if ( $opts{procs}{set} ) {
     ,"rsync"
     ,"python3"
 #    ,"-R mingw-w64-x86_64-gcc"
-#    ,"https://repo.msys2.org/mingw/mingw64/mingw-w64-x86_64-gcc-libs-10.3.0-8-any.pkg.tar.zst"
-#    ,"https://repo.msys2.org/mingw/mingw64/mingw-w64-x86_64-gcc-10.3.0-8-any.pkg.tar.zst"
+    ,"https://repo.msys2.org/mingw/mingw64/mingw-w64-x86_64-gcc-libs-12.2.0-7-any.pkg.tar.zst"
+    ,"https://repo.msys2.org/mingw/mingw64/mingw-w64-x86_64-gcc-12.2.0-7-any.pkg.tar.zst"
 #    ,"mingw-w64-x86_64-ntldd-git" # alternate ldd, not needed
     );
 

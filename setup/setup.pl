@@ -5,7 +5,7 @@ die "This script must be run under the MINGW64 shell\n" if $ENV{MSYSTEM} ne 'MIN
 ## user configuration
 
 $qt_major_version = "5.15";
-$qt_minor_version = "8";
+$qt_minor_version = "13";
 $qwt_version      = "6.1.6";
 $src_dir          = "$ENV{HOME}/src";  ## where qt qwt etc will be compiled
 $nprocs           = `nproc` + 1;
@@ -98,8 +98,8 @@ if ( $opts{procs}{set} ) {
     ,"rsync"
     ,"python3"
 #    ,"-R mingw-w64-x86_64-gcc"
-    ,"https://repo.msys2.org/mingw/mingw64/mingw-w64-x86_64-gcc-libs-10.3.0-8-any.pkg.tar.zst"
-    ,"https://repo.msys2.org/mingw/mingw64/mingw-w64-x86_64-gcc-10.3.0-8-any.pkg.tar.zst"
+#    ,"https://repo.msys2.org/mingw/mingw64/mingw-w64-x86_64-gcc-libs-10.3.0-8-any.pkg.tar.zst"
+#    ,"https://repo.msys2.org/mingw/mingw64/mingw-w64-x86_64-gcc-10.3.0-8-any.pkg.tar.zst"
 #    ,"mingw-w64-x86_64-ntldd-git" # alternate ldd, not needed
     );
 

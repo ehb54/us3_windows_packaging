@@ -40,7 +40,9 @@ repo for info &amp; supplementary data to build us3 windows binary packages
     - `~/us3_windows_packaging/utils/fixdependencies.pl update`
       - this will have to be repeated until it gives packaging instructions
         - or fancy bash to repeat until it succeeds (watch out for non-fixable errors, it will repeat until manually interrupted!)
-          - $ `false; while [ $? -ne 0 ]; do ~/us3_windows_packaging/utils/fixdependencies.pl update; done`
+          - ```
+            false; while [ $? -ne 0 ]; do ~/us3_windows_packaging/utils/fixdependencies.pl update; done
+            ```
       - follow the packaging instructions
  
 ## after install - building ultrascan again

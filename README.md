@@ -29,7 +29,7 @@ repo for info &amp; supplementary data to build us3 windows binary packages
     - exit the `msys2 msys` desktop app
   - under the `msys2 mingw64` desktop app
     - `~/us3_windows_packaging/setup/setup.pl --all`
-      - optionally add `--nprocs n` to control the number of processors used for parallel makes
+      - optionally add `--procs n` to control the number of processors used for parallel makes
         - default is the number of availabe processors + 1
         - `--nprocs` is used for configuring & building qt, qwt and ultrascan
     - `~/us3_windows_packaging/setup/setup.pl --us branch`

@@ -31,7 +31,7 @@ repo for info &amp; supplementary data to build us3 windows binary packages
     - `~/us3_windows_packaging/setup/setup.pl --all`
       - optionally add `--procs n` to control the number of processors used for parallel makes
         - default is the number of availabe processors + 1
-        - `--nprocs` is used for configuring & building qt, qwt and ultrascan
+        - `--procs` is used for configuring & building qt, qwt and ultrascan
     - `~/us3_windows_packaging/setup/setup.pl --us branch`
       - where `branch` is an ultrascan3 repo branch
     - `cd ~/ultrascan-branch`

@@ -100,6 +100,7 @@ if ( $opts{procs}{set} ) {
 #    ,"-R mingw-w64-x86_64-gcc"
     ,"https://repo.msys2.org/mingw/mingw64/mingw-w64-x86_64-gcc-libs-12.2.0-7-any.pkg.tar.zst"
     ,"https://repo.msys2.org/mingw/mingw64/mingw-w64-x86_64-gcc-12.2.0-7-any.pkg.tar.zst"
+    ,"mingw-w64-x86_64-llvm"
 #    ,"mingw-w64-x86_64-ntldd-git" # alternate ldd, not needed
     );
 
@@ -323,7 +324,7 @@ if ( $opts{us}{set} ) {
 
     print "UltraScan will be cloned in $us_dir\n";
 
-    my $cmd = "git clone -b $branch $us_git $us_dir";
+    my $cmd = "git clone -j $nprocs -b $branch $us_git $us_dir";
     print run_cmd( $cmd );
 
     ## copy over $us_mods
@@ -451,5 +452,5 @@ if ( $opts{us_update}{set} ) {
 
     ## configure & build ultrascan?
     ## setup qt5env
-}
 
+}

@@ -5,7 +5,7 @@ die "This script must be run under the MINGW64 shell\n" if $ENV{MSYSTEM} ne 'MIN
 ## user configuration
 
 $qt_major_version = "5.15";
-$qt_minor_version = "8";
+$qt_minor_version = "14";
 $qwt_version      = "6.1.6";
 $src_dir          = "$ENV{HOME}/src";  ## where qt qwt etc will be compiled
 $nprocs           = `nproc` + 1;
@@ -98,8 +98,9 @@ if ( $opts{procs}{set} ) {
     ,"rsync"
     ,"python3"
 #    ,"-R mingw-w64-x86_64-gcc"
-    ,"https://repo.msys2.org/mingw/mingw64/mingw-w64-x86_64-gcc-libs-10.3.0-8-any.pkg.tar.zst"
-    ,"https://repo.msys2.org/mingw/mingw64/mingw-w64-x86_64-gcc-10.3.0-8-any.pkg.tar.zst"
+    ,"https://repo.msys2.org/mingw/mingw64/mingw-w64-x86_64-gcc-libs-12.2.0-7-any.pkg.tar.zst"
+    ,"https://repo.msys2.org/mingw/mingw64/mingw-w64-x86_64-gcc-12.2.0-7-any.pkg.tar.zst"
+    ,"mingw-w64-x86_64-llvm"
 #    ,"mingw-w64-x86_64-ntldd-git" # alternate ldd, not needed
     );
 
@@ -323,7 +324,7 @@ if ( $opts{us}{set} ) {
 
     print "UltraScan will be cloned in $us_dir\n";
 
-    my $cmd = "git clone -b $branch $us_git $us_dir";
+    my $cmd = "git clone -j $nprocs -b $branch $us_git $us_dir";
     print run_cmd( $cmd );
 
     ## copy over $us_mods
@@ -451,5 +452,5 @@ if ( $opts{us_update}{set} ) {
 
     ## configure & build ultrascan?
     ## setup qt5env
-}
 
+}

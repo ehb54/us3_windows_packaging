@@ -21,6 +21,7 @@ repo for info &amp; supplementary data to build us3 windows binary packages
       - repeat until there is nothing further updated
         - the window will likely close after the first update and you will have to restart the `msys2 msys` desktop app 
       - N.B. do not run this command again once the steps below have been run. This is due to qt5 requiring an older version of gcc. If you wish to update the msys2 system, it is recommended to completely uninstall msys2 and make sure no msys2 created directories remain and start again. For the adventurous, you could try using pacman to remove the gcc package and all its dependencies first, then update the system with pacman, but this has not been tested.
+      - if pacman timeouts become an issue add `DisableDownloadTimeout` in `/etc/pacman.conf` [ref](https://github.com/msys2/MSYS2-packages/issues/1658#issuecomment-1852358396)
     - `pacman -S git`
     - `git clone https://github.com/ehb54/us3_windows_packaging`
     - `us3_windows_packaging/setup/setup_msys.pl --all`
@@ -28,9 +29,9 @@ repo for info &amp; supplementary data to build us3 windows binary packages
     - exit the `msys2 msys` desktop app
   - under the `msys2 mingw64` desktop app
     - `~/us3_windows_packaging/setup/setup.pl --all`
-      - optionally add `--nprocs n` to control the number of processors used for parallel makes
+      - optionally add `--procs n` to control the number of processors used for parallel makes
         - default is the number of availabe processors + 1
-        - `--nprocs` is used for configuring & building qt, qwt and ultrascan
+        - `--procs` is used for configuring & building qt, qwt and ultrascan
     - `~/us3_windows_packaging/setup/setup.pl --us branch`
       - where `branch` is an ultrascan3 repo branch
     - `cd ~/ultrascan-branch`
@@ -40,7 +41,9 @@ repo for info &amp; supplementary data to build us3 windows binary packages
     - `~/us3_windows_packaging/utils/fixdependencies.pl update`
       - this will have to be repeated until it gives packaging instructions
         - or fancy bash to repeat until it succeeds (watch out for non-fixable errors, it will repeat until manually interrupted!)
-          - $ `false; while [ $? -ne 0 ]; do ~/us3_windows_packaging/utils/fixdependencies.pl update; done`
+          - ```
+            false; while [ $? -ne 0 ]; do ~/us3_windows_packaging/utils/fixdependencies.pl update; done
+            ```
       - follow the packaging instructions
  
 ## after install - building ultrascan again

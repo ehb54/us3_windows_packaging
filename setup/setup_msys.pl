@@ -115,6 +115,10 @@ if ( $opts{tpage}{set} || $opts{all}{set} ) {
     print "processing tpage\n";
     print line('=');
 
+    # 2024.05.23 MSYS2 HTTP::Tiny doesn't find the CA bundle
+    $cmd = "mkdir -p /etc/ssl/certs; cp -p /usr/ssl/certs/ca-bundle.crt /etc/ssl/certs/ca-certificates.crt";
+    print run_cmd( $cmd );
+
     ## for dependencies, but doesn't seem to matter
     # my $cmd = "/usr/bin/core_perl/cpan Test YAML XML::Parser Log::Log4perl Template";
     my $cmd = "/usr/bin/core_perl/cpan AppConfig Template";

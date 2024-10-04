@@ -88,6 +88,7 @@ if ( $opts{procs}{set} ) {
     ,"mingw-w64-x86_64-doxygen"
     ,"mingw-w64-x86_64-harfbuzz"
     ,"mingw-w64-x86_64-libtiff"
+    ,"mingw-w64-x86_64-libarchive"
     ,"mingw-w64-x86_64-texlive-latex-recommended"
     ,"mercurial"
     ,"cvs"

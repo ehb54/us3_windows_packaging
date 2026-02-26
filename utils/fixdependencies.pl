@@ -172,8 +172,16 @@ $revfile = "programs/us/us_revision.h";
 if ( !-e $revfile ) {
     $errorsum .= "ERROR: revision file $revfile is missing\n";
 } else {
-    $rev = `awk -F\\" '{ print \$2 }' $revfile`;
+    $rev = `grep BUILDNUM $revfile | awk -F\\" '{ print \$2 }'`;
     chomp $rev;
+}
+
+$verfile = "utils/us_defines.h";
+if ( !-e $revfile ) {
+    $errorsum .= "ERROR: version containing file $verfile is missing\n";
+} else {
+    $ver = `grep US_Version $verfile | awk -F\\" '{ print \$2 }'`;
+    chomp $ver;
 }
 
 ### begin reports
@@ -237,12 +245,13 @@ if ( $errorsum ) {
     print $debuglog $errorsum if $debug;
 }
 
-if ( $rev && !keys %todos && !$errorsum && !$cmds ) {
+if ( $rev && $ver && !keys %todos && !$errorsum && !$cmds ) {
+    my $verrev = "$ver-$rev";
     my $branch = `git branch --show-current`;
     chomp $branch;
     $branch = "" if $branch =~ /^(master|main)$/;
     $branch = "-$branch" if $branch;
-    my $cmd = "$scriptpath/makepkgdir.pl $rev$branch";
+    my $cmd = "$scriptpath/makepkgdir.pl $verrev$branch";
     print hdrline( "build package commands" );
     print "$cmd\n";
     print $debuglog hdrline( "build package commands" ) if $debug;

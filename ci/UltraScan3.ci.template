@@ -10,7 +10,7 @@
    <headlogo >default - 1</>
    <dlgfontsize >s8</>
    <output >c:\setups</>
-   <exename >us3-Win64-4.0.__version__-setup.exe</>
+   <exename >us3-Win64-__version__-setup.exe</>
    <beffile ></>
    <aftfile ></>
    <uninclude >1</>
@@ -625,5 +625,6 @@
    </>
    <setdpi >1</>
 </>
+
 
 

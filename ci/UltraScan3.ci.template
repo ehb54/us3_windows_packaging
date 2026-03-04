@@ -3,7 +3,7 @@
    <autoclose >0</>
    <compname >AUC Solutions, LLC.</>
    <produrl >https://ultrascan3.aucsolutions.com</>
-   <ver >4.0.__version__</>
+   <ver >__version__</>
    <supurl >https://ultrascan3.aucsolutions.com</>
    <updurl ></>
    <dlgfont >verdana</>
@@ -625,4 +625,5 @@
    </>
    <setdpi >1</>
 </>
+
 

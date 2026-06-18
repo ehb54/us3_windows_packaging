@@ -51,9 +51,10 @@ fi
 DOMAN=1
 DODOX=1
 
-if [ -z "`which tpage`" ]; then
-  DOMAN=0
-fi
+# always do man
+#if [ -z "`which tpage`" ]; then
+#  DOMAN=0
+#fi
 if [ -z "`which doxygen`" ]; then
   DODOX=0
 fi
@@ -100,6 +101,7 @@ if [ $DOMAN -ne 0 ]; then
   pushd $d
   sdir=`pwd`
   echo "Making in $d"   >> $DIR/build.log
+  python -m ensurepip && python -m pip install -r source/requirements.txt
   make -j1 2>&1 >> $DIR/build.log
   stat=$?
   if [ $stat -gt 0 ]; then

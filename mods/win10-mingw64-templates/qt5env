@@ -10,7 +10,6 @@ US3LIB=${US3DIR}/lib
 QWTLIB=${QWTDIR}/lib
 
 PATH=${US3BIN}:${QTBIN}:$PATH:/bin/site_perl
-export SPHINXBUILD="/usr/bin/python3 -m sphinx"
 ULTRASCAN=${US3DIR}
 us3=${ULTRASCAN}
 MAKEFLAGS="-j__nprocs__"

@@ -58,6 +58,7 @@ repo for info &amp; supplementary data to build us3 windows binary packages
   - `git fetch origin`
   - `git reset --hard origin/branch`
   - `git clean -fdx`
+  - `mkdir -p bin lib` (git clean removes these; setup.pl requires them)
   - `~/us3_windows_packaging/setup/setup.pl --us_update branch`
   - `. qt5env`
   - `./makeall.sh`

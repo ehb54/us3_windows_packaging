@@ -169,7 +169,7 @@ for $f ( @extras ) {
 }
 
 $revfile = "programs/us/us_revision.h";
-if ( !-e $revfile ) {
+if ( !-e $verfile ) {
     $errorsum .= "ERROR: revision file $revfile is missing\n";
 } else {
     $rev = `grep BUILDNUM $revfile | awk -F\\" '{ print \$2 }'`;
@@ -177,7 +177,7 @@ if ( !-e $revfile ) {
 }
 
 $verfile = "utils/us_defines.h";
-if ( !-e $revfile ) {
+if ( !-e $verfile ) {
     $errorsum .= "ERROR: version containing file $verfile is missing\n";
 } else {
     $ver = `grep US_Version $verfile | awk -F\\" '{ print \$2 }'`;

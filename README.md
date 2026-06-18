@@ -54,10 +54,10 @@ repo for info &amp; supplementary data to build us3 windows binary packages
   - `cd ~/us3_windows_packaging`
   - `git pull` 
 - existing branch
-  - `cd ~/ultrascan-branch`
+  - `cd ~/ultrascan3-branch`
   - `git fetch origin`
   - `git reset --hard origin/branch`
-  - `git pull`
+  - `git clean -fdx`
   - `~/us3_windows_packaging/setup/setup.pl --us_update branch`
   - `. qt5env`
   - `./makeall.sh`
@@ -67,7 +67,7 @@ repo for info &amp; supplementary data to build us3 windows binary packages
     - follow the packaging instructions
 - new branch
   - `~/us3_windows_packaging/setup/setup.pl --us branch`
-  - `cd ~/ultrascan-branch`
+  - `cd ~/ultrascan3-branch`
   - `. qt5env`
   - `./makeall.sh`
   - `./makesomo.sh`

@@ -395,7 +395,8 @@ if ( $opts{us_update}{set} ) {
 
     ## copy over $us_mods
     
-    error_exit( "$us_dir/bin is not a directory. You should probably remove $us_dir and start over as a new branch" ) if !-d "$us_dir/bin";
+    mkdir "$us_dir/bin" if !-d "$us_dir/bin";
+    mkdir "$us_dir/lib" if !-d "$us_dir/lib";
     
     my $sedline;
     ## build up sed replacements

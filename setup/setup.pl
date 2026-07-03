@@ -6,7 +6,7 @@ die "This script must be run under the MINGW64 shell\n" if $ENV{MSYSTEM} ne 'MIN
 
 $qt_major_version = "5.15";
 $qt_minor_version = "14";
-$qwt_version      = "6.1.6";
+$qwt_version      = "6.3.0";
 $src_dir          = "$ENV{HOME}/src";  ## where qt qwt etc will be compiled
 $nprocs           = `nproc` + 1;
 $debug            = 1; ## primarily prints commands as they are run
@@ -288,7 +288,7 @@ if ( $opts{qwt}{set} || $opts{all}{set} ) {
         ## https://sourceforge.net/project/qwt/files/qwt/$qwt_version/qwt-$qwt_version.tar.bz2/download
         ## https://gigenet.dl.sourceforge.net/project/qwt/qwt/$qwt_version/qwt-$qwt_version.tar.bz2
         ## https://versaweb.dl.sourceforge.net/project/qwt/qwt/$qwt_version/qwt-$qwt_version.tar.bz2
-        my $cmd = "cd $src_dir && wget --no-check-certificate https://versaweb.dl.sourceforge.net/project/qwt/qwt/$qwt_version/qwt-$qwt_version.tar.bz2";
+        my $cmd = "cd $src_dir && wget --no-check-certificate https://downloads.sourceforge.net/project/qwt/qwt/$qwt_version/qwt-$qwt_version.tar.bz2";
         print run_cmd( $cmd );
     }
 

@@ -64,7 +64,7 @@ version, type the RasMol command 'help oldnotice'.
 Copyright
                                RasMol 2.7.5
                      Molecular Graphics Visualisation Tool
-                       13 June 2009 (rev. 17 July 2009)
+                       13 June 2009 (rev. 4 May 2012)
 
                       Based on RasMol 2.6 by Roger Sayle
        Biomolecular Structures Group,Glaxo Wellcome Research & Development
@@ -934,8 +934,8 @@ Syntax:  clipboard
 
 The RasMol 'clipboard' command places a copy of the currently displayed 
 image on the local graphics 'clipboard'. Note: this command is not yet 
-supported on UNIX or VMS machines. It is intended to make transfering images 
-between applications easier under Microsoft Windows or on an Apple 
+supported on UNIX or VMS machines. It is intended to make transferring 
+images between applications easier under Microsoft Windows or on an Apple 
 Macintosh. 
 
 When using RasMol on a UNIX or VMS system this functionality may be achieved 
@@ -1759,15 +1759,26 @@ if the appropriate fonts have been installed.
 ?save
 Save
 Syntax:  save {pdb} <filename>
+         save wpdb <filename>
+         save cif <filename>
          save mdl <filename>
          save alchemy <filename>
          save xyz <filename>
 
-Save the currently selected set of atoms in a Protein Data Bank (PDB), MDL, 
-Alchemy(tm) or XYZ format file. The distinction between this command and the 
-RasMol 'write' command has been dropped. The only difference is that without 
-a format specifier the 'save' command generates a 'PDB' file and the 'write' 
-command generates a 'GIF' image. 
+Save the currently selected set of atoms in a Protein Data Bank (PDB), Wide 
+PDB (WPDB), mmCIF (CIF), MDL, Alchemy(tm) or XYZ format file. Some of the 
+implementations are are only sufficient for reloading in RasMol and may need 
+to be supplemented for use by programs other than RasMol. 
+
+Atom serial numbers are regenerated. When this will result in more than 
+99,999 atoms being written in PDB format, numbers may be repeated. If 
+possible the repeats are done by using the same numbers in different NMR 
+models. 
+
+The distinction between this command and the RasMol 'write' command has been 
+dropped. The only difference is that without a format specifier the 'save' 
+command generates a 'PDB' file and the 'write' command generates a 'GIF' 
+image. 
 
 ?source
 ?scripts
@@ -1815,7 +1826,7 @@ Syntax:  set <parameter> {<option>}
 The RasMol 'set' command allows the user to alter various internal program 
 parameters such as those controlling rendering options. Each parameter has 
 its own set or permissible parameter options. Typically, omitting the 
-paramter option resets that parameter to its default value. A list of valid 
+parameter option resets that parameter to its default value. A list of valid 
 parameter names is given below. For more information on each internal 
 parameter type "help set parameter". 
 
@@ -2119,7 +2130,7 @@ Angstroms. A parameter value of 500 (2.0 Angstroms) or above results in an
 "Parameter value too large" error. Bonds may be coloured using the 'colour 
 bonds' command. If the selected bonds involved atoms of alternate conformers 
 then the bonds are narrowed in the middle to a radius of .8 of the specified 
-radius (or to the radius specifed as the optional second parameter). 
+radius (or to the radius specified as the optional second parameter). 
 
 Non-bonded atoms, which could become invisible in an ordinary 'wireframe' 
 display can be marked by a preceding 'set bondmode not bonded' command. If 
@@ -2642,8 +2653,8 @@ shadowed or can cast shadows. Enabling shadowing will automatically disable
 the Z-clipping (slabbing) plane using the command 'slab off'. Ray-tracing 
 typically takes about several seconds for a moderately sized protein. It is 
 recommended that shadowing be normally disabled whilst the molecule is being 
-transformed or manipulated, and only enabled once an appropiate viewpoint is 
-selected, to provide a greater impression of depth. 
+transformed or manipulated, and only enabled once an appropriate viewpoint 
+is selected, to provide a greater impression of depth. 
 
 ?slabmode
 ?set slab

@@ -176,10 +176,21 @@
                            <rows ></>
                         </>
                      </>
+                     <_ tag = 0 id = run >
+                        <desc >remove pre-4.1 versioned desktop shortcut, superseded by UltraScan.lnk</>
+                        <path >custom</>
+                        <name >C:\Windows\System32\cmd.exe</>
+                        <cmdline >/c if exist "%PUBLIC%\Desktop\UltraScan4.0.lnk" del /f /q "%PUBLIC%\Desktop\UltraScan4.0.lnk"</>
+                        <work >default</>
+                        <defwork ></>
+                        <wait >1</>
+                        <runas >norm</>
+                        <if ></>
+                     </>
                      <_ id = shcut >
                         <desc ></>
                         <shpath >comdesk</>
-                        <shfile >UltraScan4.0</>
+                        <shfile >UltraScan</>
                         <path >inst</>
                         <file >bin\us.exe</>
                         <icon >#setuppath#\etc\us3-icon-128x128.ico</>
@@ -538,10 +549,21 @@
                   <desc ></>
                   <name >lowerver</>
                </>
+               <_ tag = 0 id = run >
+                  <desc >remove pre-4.1 versioned desktop shortcut, superseded by UltraScan.lnk</>
+                  <path >custom</>
+                  <name >C:\Windows\System32\cmd.exe</>
+                  <cmdline >/c if exist "%PUBLIC%\Desktop\UltraScan4.0.lnk" del /f /q "%PUBLIC%\Desktop\UltraScan4.0.lnk"</>
+                  <work >default</>
+                  <defwork ></>
+                  <wait >1</>
+                  <runas >norm</>
+                  <if ></>
+               </>
                <_ tag = 0 id = shcut >
                   <desc ></>
                   <shpath >comdesk</>
-                  <shfile >UltraScan4.0</>
+                  <shfile >UltraScan</>
                   <path >inst</>
                   <file >bin\us.exe</>
                   <cmdline ></>

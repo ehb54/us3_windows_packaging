@@ -39,11 +39,8 @@ repo for info &amp; supplementary data to build us3 windows binary packages
     - `./makeall.sh`
     - `./makesomo.sh`
     - `~/us3_windows_packaging/utils/fixdependencies.pl update`
-      - this will have to be repeated until it gives packaging instructions
-        - or fancy bash to repeat until it succeeds (watch out for non-fixable errors, it will repeat until manually interrupted!)
-          - ```
-            false; while [ $? -ne 0 ]; do ~/us3_windows_packaging/utils/fixdependencies.pl update; done
-            ```
+      - this repeats itself until it gives packaging instructions
+        - it stops with an error if a pass leaves something it cannot fix, so it will not loop forever
       - follow the packaging instructions
  
 ## after install - building ultrascan again
@@ -63,7 +60,7 @@ repo for info &amp; supplementary data to build us3 windows binary packages
   - `./makeall.sh`
   - `./makesomo.sh`
   - `~/us3_windows_packaging/utils/fixdependencies.pl update`
-    - this will have to be repeated until it gives packaging instructions
+    - this repeats itself until it gives packaging instructions
     - follow the packaging instructions
 - new branch
   - `~/us3_windows_packaging/setup/setup.pl --us branch`
@@ -72,7 +69,7 @@ repo for info &amp; supplementary data to build us3 windows binary packages
   - `./makeall.sh`
   - `./makesomo.sh`
   - `~/us3_windows_packaging/utils/fixdependencies.pl update`
-    - this will have to be repeated until it gives packaging instructions
+    - this repeats itself until it gives packaging instructions
     - follow the packaging instructions
 
 ## notes

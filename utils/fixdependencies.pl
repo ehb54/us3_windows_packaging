@@ -1,9 +1,10 @@
 #!/usr/bin/perl
 
 use warnings;
-$debug    = 0;
-$logfile  = "fixdeps.log";
-$tempfile = "tempfile.txt";
+$debug     = 0;
+$logfile   = "fixdeps.log";
+$tempfile  = "tempfile.txt";
+$maxpasses = 25;
 
 die qq[environment variable QTDIR must be defined, perhaps by ". qt5env"\n] if !$ENV{QTDIR};
 die qq[environment variable QWTDIR must be defined, perhaps by ". qt5env"\n] if !$ENV{QWTDIR};
@@ -14,7 +15,9 @@ $notes = "usage: $0 (list|update)
 
 finds all libs of everything in bin
 
-update will copy needed libraries if found
+update will copy needed libraries if found, then recheck and repeat
+until nothing is left to copy, since each copied library can pull in
+further dependencies of its own
 
 ";
 
@@ -38,233 +41,279 @@ use File::Compare;
 
 $scriptpath = dirname(__FILE__);
 
-## get apps
-
-@apps = `find bin -type f`;
-
-## prune apps
-
-@apps = grep !/(win64|linux64|osx1|manual\.q|\.a$|rasmol)/, @apps;
-
-## get libs
-
-@libs = `find lib -type f | grep -Pv '\\.a\$'`;
-grep chomp, @libs;
-
-## collect all to check
-
-push @all, @apps;
-
 if ( $debug ) {
     open  $debuglog, ">>$logfile";
     print $debuglog `date`;
-    print $debuglog "all:\n";
-    print $debuglog join '', @all;
-    print $debuglog "\n";
-    print $debuglog "apps:\n";
-    print $debuglog join '', @apps;
-    print $debuglog "\n";
-    print $debuglog "libs:\n";
-    print $debuglog join "\n", @libs;
-    print $debuglog "\n";
 }
-grep chomp, @all;
 
-## check if lib is present in bin
-for $f ( @libs ) {
-    my $l = $f;
-    $l =~ s/^lib/bin/;
-    if ( compare( $l, $f ) ) {
-        $tochecks{$l}++;
-        $copyfrom{$l} = $f;
-        $forcecopy{$l}++;
+## list does one pass only, since it never changes anything and so can never converge
+
+$maxpasses = 1 if !$update;
+
+$prevcmds = "";
+
+for ( $pass = 1; $pass <= $maxpasses; $pass++ ) {
+
+    print hdrline( "pass $pass of at most $maxpasses" ) if $update;
+    print $debuglog hdrline( "pass $pass of at most $maxpasses" ) if $debug;
+
+    ## reset everything collected by the previous pass
+
+    @apps       = ();
+    @libs       = ();
+    @all        = ();
+    %tochecks   = ();
+    %copyfrom   = ();
+    %forcecopy  = ();
+    %toremoves  = ();
+    %todos      = ();
+    %missing    = ();
+    $warnings   = undef;
+    $errorsum   = undef;
+    $cmds       = undef;
+
+    ## get apps
+
+    @apps = `find bin -type f`;
+
+    ## prune apps
+
+    @apps = grep !/(win64|linux64|osx1|manual\.q|\.a$|rasmol)/, @apps;
+
+    ## get libs
+
+    @libs = `find lib -type f | grep -Pv '\\.a\$'`;
+    grep chomp, @libs;
+
+    ## collect all to check
+
+    push @all, @apps;
+
+    if ( $debug ) {
+        print $debuglog "all:\n";
+        print $debuglog join '', @all;
+        print $debuglog "\n";
+        print $debuglog "apps:\n";
+        print $debuglog join '', @apps;
+        print $debuglog "\n";
+        print $debuglog "libs:\n";
+        print $debuglog join "\n", @libs;
+        print $debuglog "\n";
     }
-}
+    grep chomp, @all;
 
-for $f ( @all ) {
-    print $debuglog "checking $f\n" if $debug;
-    print "checking $f\n";
-    {
-        `ldd $f > $tempfile`;
-        if ( $? ) {
-            warn "warning: ldd $f error, retrying 1 of 2\n" if $?;
+    ## check if lib is present in bin
+    for $f ( @libs ) {
+        my $l = $f;
+        $l =~ s/^lib/bin/;
+        if ( compare( $l, $f ) ) {
+            $tochecks{$l}++;
+            $copyfrom{$l} = $f;
+            $forcecopy{$l}++;
+        }
+    }
+
+    for $f ( @all ) {
+        print $debuglog "checking $f\n" if $debug;
+        print "checking $f\n";
+        {
             `ldd $f > $tempfile`;
             if ( $? ) {
-                warn "warning: ldd $f error, retrying 2 of 2\n" if $?;
+                warn "warning: ldd $f error, retrying 1 of 2\n" if $?;
                 `ldd $f > $tempfile`;
-                die "fatal: ldd $f error\n" if $?;
+                if ( $? ) {
+                    warn "warning: ldd $f error, retrying 2 of 2\n" if $?;
+                    `ldd $f > $tempfile`;
+                    die "fatal: ldd $f error\n" if $?;
+                }
+                warn "success: ldd $f\n";
             }
-            warn "success: ldd $f\n";
-        }
-        
-        my @extra = `grep -Pv '^\\s*\\?\\?\\?' $tempfile | grep -vi WINDOWS | grep -v 'not found' | awk '{ print \$3 }' | sort -u`;
-        grep chomp, @extra;
-        foreach my $j ( @extra ) {
-            my $d = $j;
-            $d =~ s/^.*\///g;
-            print $debuglog "checking $f : found lib bin/$d from $j\n" if $debug;
-            $tochecks{"bin/$d"}++;
-            $copyfrom{"bin/$d"} = $j if !$copyfrom{"bin/$d"};
-        }
-    } 
-    {
-        `ldd $f > $tempfile`;
-        if ( $? ) {
-            warn "warning: ldd $f error, retrying 1 of 2\n" if $?;
+
+            my @extra = `grep -Pv '^\\s*\\?\\?\\?' $tempfile | grep -vi WINDOWS | grep -v 'not found' | awk '{ print \$3 }' | sort -u`;
+            grep chomp, @extra;
+            foreach my $j ( @extra ) {
+                my $d = $j;
+                $d =~ s/^.*\///g;
+                print $debuglog "checking $f : found lib bin/$d from $j\n" if $debug;
+                $tochecks{"bin/$d"}++;
+                $copyfrom{"bin/$d"} = $j if !$copyfrom{"bin/$d"};
+            }
+        } 
+        {
             `ldd $f > $tempfile`;
             if ( $? ) {
-                warn "warning: ldd $f error, retrying 2 of 2\n" if $?;
+                warn "warning: ldd $f error, retrying 1 of 2\n" if $?;
                 `ldd $f > $tempfile`;
-                die "fatal: ldd $f error\n" if $?;
+                if ( $? ) {
+                    warn "warning: ldd $f error, retrying 2 of 2\n" if $?;
+                    `ldd $f > $tempfile`;
+                    die "fatal: ldd $f error\n" if $?;
+                }
+                warn "success: ldd $f\n";
             }
-            warn "success: ldd $f\n";
+            my @extra = `grep -Pv '^\\s*\\?\\?\\?' $tempfile | grep -vi WINDOWS | grep 'not found' | awk '{ print \$1 }' | sort -u`;
+            die "fatal: ldd error\n" if $?;
+            grep chomp, @extra;
+            foreach my $j ( @extra ) {
+                print $debuglog "checking $f : not found lib $j\n" if $debug;
+                $tochecks{"bin/$j"}++;
+            }
         }
-        my @extra = `grep -Pv '^\\s*\\?\\?\\?' $tempfile | grep -vi WINDOWS | grep 'not found' | awk '{ print \$1 }' | sort -u`;
-        die "fatal: ldd error\n" if $?;
-        grep chomp, @extra;
-        foreach my $j ( @extra ) {
-            print $debuglog "checking $f : not found lib $j\n" if $debug;
-            $tochecks{"bin/$j"}++;
+    }
+
+    ## remove unneeded
+    @unneeded = (
+        "bin/*.a"
+        ,"bin/*_linux64*"
+        ,"bin/*_osx*"
+        );
+
+    for $p ( @unneeded ) {
+        for my $f ( glob $p ) {
+            $toremoves{$f}++;
         }
     }
-}
 
-## remove unneeded
-@unneeded = (
-    "bin/*.a"
-    ,"bin/*_linux64*"
-    ,"bin/*_osx*"
-    );
+    ## extra checks
 
-for $p ( @unneeded ) {
-    for my $f ( glob $p ) {
-        $toremoves{$f}++;
+    @extras = (
+        "bin/rasmol.exe"
+        ,"bin/rasmol.hlp"
+        ,"bin/tar.exe"
+        ,"bin/manual.qch"
+        ,"bin/assistant.exe"
+        ,"bin/plugins"
+        );
+
+    %known_source = (
+        "bin/assistant.exe" => "$ENV{QTDIR}/bin/assistant.exe"
+        ,"bin/plugins"      => "$ENV{QTDIR}/plugins"
+        ,"bin/qwt.dll"      => "$ENV{QWTDIR}/lib/qwt.dll"
+        );
+
+    for $f ( @extras ) {
+        if ( !-e $f ) {
+            $tochecks{ $f }++;
+            $copyfrom{ $f } = $known_source{$f} if exists $known_source{$f};
+        }
     }
-}
 
-my $cmds;
-
-## extra checks
-
-@extras = (
-    "bin/rasmol.exe"
-    ,"bin/rasmol.hlp"
-    ,"bin/tar.exe"
-    ,"bin/manual.qch"
-    ,"bin/assistant.exe"
-    ,"bin/plugins"
-    );
-
-%known_source = (
-    "bin/assistant.exe" => "$ENV{QTDIR}/bin/assistant.exe"
-    ,"bin/plugins"      => "$ENV{QTDIR}/plugins"
-    ,"bin/qwt.dll"      => "$ENV{QWTDIR}/lib/qwt.dll"
-    );
-
-for $f ( @extras ) {
-    if ( !-e $f ) {
-        $tochecks{ $f }++;
-        $copyfrom{ $f } = $known_source{$f} if exists $known_source{$f};
-    }
-}
-
-$revfile = "programs/us/us_revision.h";
-if ( !-e $revfile ) {
-    $errorsum .= "ERROR: revision file $revfile is missing\n";
-} else {
-    $rev = `grep BUILDNUM $revfile | awk -F\\" '{ print \$2 }'`;
-    chomp $rev;
-}
-
-$verfile = "utils/us_defines.h";
-if ( !-e $verfile ) {
-    $errorsum .= "ERROR: version containing file $verfile is missing\n";
-} else {
-    $ver = `grep US_Version $verfile | awk -F\\" '{ print \$2 }'`;
-    chomp $ver;
-}
-
-### begin reports
-
-print hdrline( "todos" );
-for $d ( sort { $a cmp $b } keys %todos ) {
-    print "$d\n    " . $todos{$d} . "\n";
-}    
-$errorsum .= "WARNING: todos present, must be fixed before packaging\n" if keys %todos;
-
-print hdrline( "missing" );
-print join "\n", sort { $a cmp $b } keys %missing;
-print "\n" if keys %missing;
-
-print hdrline( "toremoves" );
-print join "\n", sort { $a cmp $b } keys %toremoves;
-print "\n" if keys %toremoves;
-
-### checks
-print hdrline( "checking existence of libraries and other files" );
-print hdrline( "tochecks" );
-
-for $d ( sort { $a cmp $b } keys %tochecks ) {
-    if ( -e $d && !$forcecopy{$d} ) {
-        print "ok: $d\n";
+    $revfile = "programs/us/us_revision.h";
+    if ( !-e $revfile ) {
+        $errorsum .= "ERROR: revision file $revfile is missing\n";
     } else {
-        my $err = "ERROR: missing: $d - ";
-        if ( $copyfrom{ $d } ) {
-            $err .= "copy from " .  $copyfrom{ $d };
-            $cmds .= "cp -rp " . $copyfrom{ $d } . " $d\n";
+        $rev = `grep BUILDNUM $revfile | awk -F\\" '{ print \$2 }'`;
+        chomp $rev;
+    }
+
+    $verfile = "utils/us_defines.h";
+    if ( !-e $verfile ) {
+        $errorsum .= "ERROR: version containing file $verfile is missing\n";
+    } else {
+        $ver = `grep US_Version $verfile | awk -F\\" '{ print \$2 }'`;
+        chomp $ver;
+    }
+
+    ### begin reports
+
+    print hdrline( "todos" );
+    for $d ( sort { $a cmp $b } keys %todos ) {
+        print "$d\n    " . $todos{$d} . "\n";
+    }    
+    $errorsum .= "WARNING: todos present, must be fixed before packaging\n" if keys %todos;
+
+    print hdrline( "missing" );
+    print join "\n", sort { $a cmp $b } keys %missing;
+    print "\n" if keys %missing;
+
+    print hdrline( "toremoves" );
+    print join "\n", sort { $a cmp $b } keys %toremoves;
+    print "\n" if keys %toremoves;
+
+    ### checks
+    print hdrline( "checking existence of libraries and other files" );
+    print hdrline( "tochecks" );
+
+    for $d ( sort { $a cmp $b } keys %tochecks ) {
+        if ( -e $d && !$forcecopy{$d} ) {
+            print "ok: $d\n";
         } else {
-            if ( $known_source{$d} ) {
-                $err .= "copy from " .  $known_source{ $d };
-                $cmds .= "cp -rp " . $known_source{ $d } . " $d\n";
+            my $err = "ERROR: missing: $d - ";
+            if ( $copyfrom{ $d } ) {
+                $err .= "copy from " .  $copyfrom{ $d };
+                $cmds .= "cp -rp " . $copyfrom{ $d } . " $d\n";
             } else {
-                $err .= "unknown source";
+                if ( $known_source{$d} ) {
+                    $err .= "copy from " .  $known_source{ $d };
+                    $cmds .= "cp -rp " . $known_source{ $d } . " $d\n";
+                } else {
+                    $err .= "unknown source";
+                }
             }
+            print "$err\n";
+            $errorsum .= "$err\n";
         }
-        print "$err\n";
+    }
+
+    for $d ( sort { $a cmp $b } keys %toremoves ) {
+        $cmds .= "rm $d\n";
+        $err  = "file to be removed: $d";
         $errorsum .= "$err\n";
     }
-}
 
-for $d ( sort { $a cmp $b } keys %toremoves ) {
-    $cmds .= "rm $d\n";
-    $err  = "file to be removed: $d";
-    $errorsum .= "$err\n";
-}
+    if ( $warnings ) {
+        print hdrline( "warnings" );
+        print $warnings;
+        print $debuglog hdrline( "warnings" ) if $debug;
+        print $debuglog $warnings if $debug;
+    }
 
-if ( $warnings ) {
-    print hdrline( "warnings" );
-    print $warnings;
-    print $debuglog hdrline( "warnings" ) if $debug;
-    print $debuglog $warnings if $debug;
-}
+    if ( $errorsum ) {
+        print hdrline( "error summary" );
+        print $errorsum;
+        print $debuglog hdrline( "error summary" ) if $debug;
+        print $debuglog $errorsum if $debug;
+    }
 
-if ( $errorsum ) {
-    print hdrline( "error summary" );
-    print $errorsum;
-    print $debuglog hdrline( "error summary" ) if $debug;
-    print $debuglog $errorsum if $debug;
-}
+    if ( $rev && $ver && !keys %todos && !$errorsum && !$cmds ) {
+        my $verrev = "$ver-$rev";
+        my $branch = `git branch --show-current`;
+        chomp $branch;
+        $branch = "" if $branch =~ /^(master|main)$/;
+        $branch = "-$branch" if $branch;
+        my $cmd = "$scriptpath/makepkgdir.pl $verrev$branch";
+        print hdrline( "build package commands" );
+        print "$cmd\n";
+        print $debuglog hdrline( "build package commands" ) if $debug;
+        print $debuglog "$cmd\n" if $debug;
+        exit;
+    }
 
-if ( $rev && $ver && !keys %todos && !$errorsum && !$cmds ) {
-    my $verrev = "$ver-$rev";
-    my $branch = `git branch --show-current`;
-    chomp $branch;
-    $branch = "" if $branch =~ /^(master|main)$/;
-    $branch = "-$branch" if $branch;
-    my $cmd = "$scriptpath/makepkgdir.pl $verrev$branch";
-    print hdrline( "build package commands" );
-    print "$cmd\n";
-    print $debuglog hdrline( "build package commands" ) if $debug;
-    print $debuglog "$cmd\n" if $debug;
-    exit;
-}
+    print hdrline( "cmds" );
+    print $cmds if $cmds;
 
-print hdrline( "cmds" );
-print $cmds;
+    ## nothing left to copy or remove, so repeating will not change anything
 
-if ( $cmds && $update ) {
+    if ( !$cmds ) {
+        die "not ready for packaging\n" if keys %todos || $errorsum;
+        exit;
+    }
+
+    ## list only reports what would be done
+
+    die "not ready for packaging\n" if !$update;
+
+    ## the same commands as the previous pass means the last pass achieved
+    ## nothing, so repeating would loop forever
+
+    if ( $cmds eq $prevcmds ) {
+        print hdrline( "pass $pass changed nothing, giving up" );
+        die "not ready for packaging: the commands above did not resolve, check them by hand\n";
+    }
+    $prevcmds = $cmds;
+
     print `$cmds`;
-    print "WARNING: rerun until no cmds nor ERRORs left\n";
+    print hdrline( "pass $pass applied the commands above, rechecking" );
 }
 
-die "not ready for packaging\n" if $cmds || keys %todos || $errorsum;
+die "not ready for packaging: still incomplete after $maxpasses passes\n";

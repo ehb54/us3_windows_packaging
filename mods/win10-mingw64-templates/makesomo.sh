@@ -1,5 +1,17 @@
 #!/bin/bash
 
+# usage: makesomo.sh [--qmake | --cmake] [make options]
+#   --qmake  build SOMO with qmake (the default)
+#   --cmake  build SOMO with CMake (cmake --preset qt5-msys2); needs an
+#            ultrascan3 tree with SOMO's CMake build
+#            (us_somo/develop/CMakePresets.json) and a Windows build of cmake
+#            (setup.pl --cmake installs one)
+BUILDSYS=qmake
+case "$1" in
+  --qmake) BUILDSYS=qmake; shift ;;
+  --cmake) BUILDSYS=cmake; shift ;;
+esac
+
 MKARGS="$@"
 if [ $# -eq 0 ]; then
   MKARGS="-j __nprocs__"
@@ -37,12 +49,21 @@ if [ `uname -s|grep -ci "cygwin"` -ne 0 ]; then
   ISWIN=2
 fi
 
+# cmake for --cmake: on Windows the one setup.pl --cmake installs, if there is
+# one (it must be a Windows build of cmake, not MSYS's), else the one on the PATH
+CMAKE=cmake
+if [ $ISWIN -eq 1 ]; then
+  for c in $HOME/src/cmake-*-windows-x86_64/bin/cmake.exe; do
+    [ -x "$c" ] && CMAKE="$c"
+  done
+fi
+
 DIR=$(pwd)
 NBERR=0
 ##SOMO3=`(cd $ULTRASCAN/../ULTRASCAN_somo;pwd)`
 SOMO3=`(cd $ULTRASCAN/us_somo;pwd)`
 
-if [ $ISWIN -eq 1 ]; then
+if [ $ISWIN -eq 1 ] && [ "$BUILDSYS" = "qmake" ]; then
   # Run revision and qmake in Cygwin window
   cd $SOMO3/develop
   pwd
@@ -67,16 +88,30 @@ if [ $ISWIN -eq 1 ]; then
   # Run makes for lib,all in MSYS window
   cd $SOMO3/develop
   echo current path for somo compiling is `pwd`
-  qmake libus_somo.pro
-  # cp Makefile-lib Makefile
-  # cp Makefile.R-lib Makefile.Release
-  # cp Makefile.D-lib Makefile.Debug
-  make
-  # cp Makefile-all Makefile
-  # cp Makefile.R-all Makefile.Release
-  # cp Makefile.D-all Makefile.Debug
-  qmake us_somo.pro
-  make
+  if [ "$BUILDSYS" = "cmake" ]; then
+    if [ ! -f CMakePresets.json ]; then
+      echo "Error: $SOMO3/develop has no CMakePresets.json, so this tree cannot build SOMO with CMake; use qmake"
+      exit -1
+    fi
+    "$CMAKE" --preset qt5-msys2 || exit -1
+    # MAKE (exported above for qmake's makefiles) and MAKEFLAGS (set by qt5env)
+    # would force -j into every sub-make, so make gets the options only here
+    ( unset MAKE MAKEFLAGS; "$CMAKE" --build --preset qt5-msys2 -- ${MKARGS} ) || exit -1
+    # the build is in build/qt5-msys2: put the programs and the DLL where qmake does
+    mkdir -p ../bin
+    cp -p build/qt5-msys2/bin/*.exe build/qt5-msys2/bin/*.dll ../bin/
+  else
+    qmake libus_somo.pro
+    # cp Makefile-lib Makefile
+    # cp Makefile.R-lib Makefile.Release
+    # cp Makefile.D-lib Makefile.Debug
+    make
+    # cp Makefile-all Makefile
+    # cp Makefile.R-all Makefile.Release
+    # cp Makefile.D-all Makefile.Debug
+    qmake us_somo.pro
+    make
+  fi
   echo "MAKE of somo complete"
   cd ../
   ls -l ./bin

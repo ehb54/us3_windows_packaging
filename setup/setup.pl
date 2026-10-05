@@ -7,6 +7,7 @@ die "This script must be run under the MINGW64 shell\n" if $ENV{MSYSTEM} ne 'MIN
 $qt_major_version = "5.15";
 $qt_minor_version = "14";
 $qwt_version      = "6.3.0";
+$cmake_version    = "3.31.12";         ## for --cmake
 $src_dir          = "$ENV{HOME}/src";  ## where qt qwt etc will be compiled
 $nprocs           = `nproc` + 1;
 $debug            = 1; ## primarily prints commands as they are run
@@ -32,6 +33,8 @@ $qtinstalldir = "$src_dir/qt-$qt_version";
 $qwtfile      = "$src_dir/qwt-$qwt_version.tar.bz2";
 $qwtsrcdir    = "$src_dir/qt-$qt_version-qwt-$qwt_version";
 
+$cmake_name   = "cmake-$cmake_version-windows-x86_64";
+
 $us_mods      = "$scriptdir/../mods/win10-mingw64-templates";
 
 ## end developer config
@@ -45,6 +48,7 @@ initopts(
     ,"git",       "repo",      "use specified repo instead of default $us_git", 1
     ,"qt",        "",          "download and build qt", 0
     ,"qwt",       "",          "download and build qwt", 0
+    ,"cmake",     "",          "download a Windows build of cmake $cmake_version, for makesomo.sh --cmake", 0
     ,"us",        "branch",    "branch download and setup ultrascan", 1
     ,"us_update", "branch",    "update existing branch,", 1
     ,"procs",     "n",         "set number of processors (default $nprocs)", 1
@@ -304,6 +308,32 @@ if ( $opts{qwt}{set} || $opts{all}{set} ) {
 
     my $cmd = "cd $qwtsrcdir && $qtinstalldir/bin/qmake && make -j$nprocs > build.stdout 2> build.stderr";
     print run_cmd( $cmd );
+}
+
+if ( $opts{cmake}{set} ) {
+    print line('=');
+    print "processing cmake\n";
+    print line('=');
+
+    ## Kitware's Windows build, checked against their SHA-256 list and unpacked in $src_dir,
+    ## where makesomo.sh --cmake looks for it. MSYS2's own cmake builds for MSYS, not Windows,
+    ## and installing mingw-w64-x86_64-cmake with pacman could pull in a newer gcc.
+    my $url  = "https://github.com/Kitware/CMake/releases/download/v$cmake_version";
+    my $sums = "cmake-$cmake_version-SHA-256.txt";
+
+    if ( -e "$src_dir/$cmake_name.zip" ) {
+        warn "NOTICE: $src_dir/$cmake_name.zip exists, not downloading again. Remove if you want a fresh download\n";
+    } else {
+        print run_cmd( "mkdir -p $src_dir && cd $src_dir && wget $url/$cmake_name.zip && wget -O $sums $url/$sums" );
+    }
+    print run_cmd( "cd $src_dir && grep ' $cmake_name.zip\$' $sums | sha256sum -c -" ) . "\n";
+
+    if ( -d "$src_dir/$cmake_name" ) {
+        warn "NOTICE: $src_dir/$cmake_name exists, not extracting again. Remove if you want a fresh extract\n";
+    } else {
+        print run_cmd( "cd $src_dir && bsdtar -xf $cmake_name.zip" );
+    }
+    print run_cmd( "$src_dir/$cmake_name/bin/cmake.exe --version" ) . "\n";
 }
 
 if ( $opts{git}{set} ) {

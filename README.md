@@ -72,6 +72,15 @@ repo for info &amp; supplementary data to build us3 windows binary packages
     - this repeats itself until it gives packaging instructions
     - follow the packaging instructions
 
+## building SOMO with CMake (optional)
+- qmake is still the default
+- an ultrascan3 branch that has SOMO's CMake build (`us_somo/develop/CMakePresets.json`, from ehb54/ultrascan3#579 on) can build SOMO with CMake instead
+  - once, under the `msys2 mingw64` desktop app: `~/us3_windows_packaging/setup/setup.pl --cmake`
+    - this downloads a Windows build of cmake into `~/src`, checked against its published SHA-256
+    - MSYS2's own cmake does not build native Windows programs, and installing `mingw-w64-x86_64-cmake` with `pacman` could pull in a newer gcc
+  - in the steps above, run `./makesomo.sh --cmake` in place of `./makesomo.sh`
+  - the CMake build puts the programs and the DLL where the qmake build does, so `fixdependencies.pl` and the packaging steps stay the same
+
 ## notes
  - `createinstallfree` will put built packages in `/c/setups` (equivalently `c:/setups`)
  - depending on the speed of your machine & number of processers - it can take quite a while for the setups to finish

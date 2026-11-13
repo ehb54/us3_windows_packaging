@@ -1218,6 +1218,7 @@ as a single '%' character.
 ?load
 Load
 Syntax:  load {<format>} <filename>
+         load mesh <filename>
 
 Load a molecule coordinate file into RasMol. Valid molecule file formats are 
 'pdb' (Protein Data Bank format), 'mdl' (Molecular Design Limited's MOL file 
@@ -1246,6 +1247,27 @@ conventional filename. This option specifies that the coordinates of the
 molecule to load are stored in the same file as the currently executing 
 commands. 
 
+The 'load mesh' command reads a triangulated surface, such as the meshes 
+made for boundary-element (BEST) or ZENO hydrodynamics, and shows it with 
+the current molecule as a new map. A molecule must be loaded first. The 
+format is recognised from the file name or its contents: BEST triangle files 
+(a first line giving the number of triangles, the area and the volume, then 
+the nine coordinates of each triangle, as written by rcoal and sesmesh); 
+msroll '.c3p' files, with the area and volume from the '.c3v' file beside 
+them; MSMS '.vert' and '.face' files; and ZENO '.bod' files, of which only 
+the TRIANGLE lines are read. Coordinates are in Angstroms (or the units a 
+.bod file states) in the frame of the molecule's coordinate file. 
+
+The mesh becomes the only selected map, so the map commands that change how 
+a map is drawn apply to it: 'map surface', 'map mesh' and 'map dots' choose 
+the representation (with a radius, as in 'map mesh 0.1', the edges are drawn 
+as cylinders, or the vertices as spheres), 'map colour' sets its colour, 
+'map colour atom' colours it by the nearest atom, 'map show' reports its 
+triangles, whether it is closed, its area and the volume it encloses, and 
+'map zap' deletes it. Commands that contour a map again, such as 'map 
+level', have no effect on a mesh. The 'slab' command cuts a mesh open to 
+show the molecule inside it. 
+
 ?map
 Map
 Syntax:  map {<map_selector>} {<map_subcommand> <parameters>}
@@ -1254,7 +1276,8 @@ The RasMol 'map' commands manipulate electron density maps in coordination
 with the display of molecules. These commands are very memory intensive and 
 may not work on machines with limited memory. Each molecule may have as many 
 maps as available memory permits. Maps may be read from files or generated 
-from Gaussian density distributions around atoms. 
+from Gaussian density distributions around atoms. A triangulated surface 
+read with 'load mesh' is also shown as a map. 
 
 'map colour', to colour a map according to a given colour scheme, 'map 
 generate', to generate a map from selected atoms based on pseudo-Gaussians, 
